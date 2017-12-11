@@ -14,7 +14,7 @@
       include 'stdheader.php'
     ?>
     <title>AIFLG Page Principale</title>
-    <script src="js/dev/table.js"></script>
+    <script src="js/table.js"></script>
     <script src="js/admin0.js"></script>
     <script>
       $(function () {
