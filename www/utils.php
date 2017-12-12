@@ -14,8 +14,8 @@ function AIFLG_encrypt ($s) {
   return md5($s);
 }
 
-function AIFLG_createUID () {
-  return uniqid ("UID_");
+function AIFLG_createUniqueID () {
+  return uniqid ("");
 }
 
 function AIFLG_createAuthCookieValue () {

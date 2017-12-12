@@ -2,6 +2,23 @@
 require_once 'dbaccess.php';
 require_once 'utils.php';
 
+function AIFLG_getStructures () {
+  global $AIFLG_STRUCTURES_TABLE;
+
+  $rs = AIFLG_query ("select * from $AIFLG_STRUCTURES_TABLE");
+
+  $ret = array ();
+  while ($r = $rs -> fetch ()) {
+    array_push ($ret,
+		array ('sid' => $r ['sid'],
+		       'label' => $r ['label'],
+		       'type' => $r ['_type'],
+		       'description' => $r ['description']));
+  }
+  $rs -> closeCursor ();
+  return $ret;
+}
+
 function getAllStructuresJson ($uid) {
   global $AIFLG_STRUCTURES_TABLE;
 
