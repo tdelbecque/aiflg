@@ -21,6 +21,7 @@ SoDAD.Admin.loadUsers = function (d) {
 	       {query: "allusers"},
 	       function (data) {
 		   var options = {
+		       newElement: d.users.newElement,
 		       whenUpdateRow: whenUpdateRow,
 		       containerId: containerId,
 		       tableId: containerId + "-table",
@@ -69,7 +70,33 @@ SoDAD.Admin.loadStructures = function (d) {
 	       })
 };
 
-function loadPageAdmin0 (d) {
-    SoDAD.Admin.loadUsers (d);
-    SoDAD.Admin.loadStructures (d);
+SoDAD.pageAdmin0WhenLoaded = function (uid) {
+    var usersConfig = {
+	newElement: function (fields) {
+	    $.post ("index.php",
+		    {query: "newuser"},
+		    function (ne) {
+			$.each (fields,
+			    function (_, field) {
+				if (field.inputId) {
+				    if (SoDAD.isDefined (ne [field.name]))
+					$("#" + field.inputId).val (ne [field.name]);
+				    else
+					$("#" + field.inputId).val ("");					
+				}});	
+		    },
+		    'json');
+	},
+	containerId: "users-table"
+    };
+    
+    var config = {
+        uid: uid,
+	users: usersConfig,
+        users_container_id: "users-table",
+        structures_container_id: "structures-table"
+    };
+
+    SoDAD.Admin.loadUsers (config);
+    SoDAD.Admin.loadStructures (config);
 }
