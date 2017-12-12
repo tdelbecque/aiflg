@@ -5,6 +5,10 @@ SoDAD.isUndefined = function (x) {
     return x === undef;
 };
 
+SoDAD.isDefined = function (x) {
+    return ! SoDAD.isUndefined (x);
+};
+
 SoDAD.createGlyph = function (glyph, options, attr) {
     if (isUndefined (attr)) attr = {};
     var e =  $("<span/>", attr).
