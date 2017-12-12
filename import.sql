@@ -53,6 +53,6 @@ insert into roles_table values ('0', 'ADMIN/0', '0', 'Administrateur principal')
 
 create table cookies_table (uid text, cookie text, encrypted_cookie text);
 
-drop table if exists structures;
-create table structures_table (sid text, _type text, description text);
-insert into structures_table values ('0', '0', 'AIFLG');
+drop table if exists structures_table;
+create table structures_table (sid text, label text, _type text, description text);
+insert into structures_table values ('0', 'AIFLG', '0', 'AIFLG');
