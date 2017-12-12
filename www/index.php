@@ -1,6 +1,8 @@
 <?php  // Hi emacs ! -*- mode: c; -*- 
 
 require_once 'utils.php';
+require_once 'users.php';
+require_once 'structures.php';
 
 $uid = checkCookie ();
 if (is_null ($uid)) { 
@@ -19,6 +21,11 @@ if (is_null ($uid)) {
       case 'allusers':
 	header('Content-type:application/json;charset=utf-8');
 	echo getAllUsersJSON ($uid);
+	break;
+
+      case 'allstructures':
+	header('Content-type:application/json;charset=utf-8');
+	echo getAllStructuresJSON ($uid);
 	break;
 	
       default:
