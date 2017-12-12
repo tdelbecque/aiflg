@@ -108,13 +108,25 @@ $.extend (SoDAD_HTMLTable.prototype, {
 		    return false;
 		});
 		    
-		f.off ('show.bs.modal');
-		f.on ('show.bs.modal', function () {
+		var ne = options.newElement (x.fields);
+		if (ne) {
+		    $.each (x.fields,
+			    function (_, field) {
+				if (field.inputId) {
+				    if (SoDAD.isDefined (ne [field.name]))
+					$("#" + field.inputId).val (ne [field.name]);
+				    else
+					$("#" + field.inputId).val ("");					
+				}});
+		} else {
 		    $.each (x.fields,
 			    function (_, field) {
 				if (field.inputId) {
 				    $("#" + field.inputId).val ("");
-				}})})});
+				}});
+		}
+		
+	    });
 	
 	var table = $('<table/>', {id: options.containerId + "-table"}).addClass ('table');
 	var thead = $('<thead/>').appendTo (table);
