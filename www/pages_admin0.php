@@ -14,6 +14,7 @@
       include 'stdheader.php'
     ?>
     <title>AIFLG Page Principale</title>
+    <script src="js/sodad.js"></script>
     <script src="js/table.js"></script>
     <script src="js/admin0.js"></script>
     <script>
