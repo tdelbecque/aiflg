@@ -28,15 +28,36 @@ if (is_null ($uid)) {
 	echo getAllStructuresJSON ($uid);
 	break;
 	
+      case 'uniqueid':
+	header('Content-type:application/json;charset=utf-8');
+	echo json_encode (array ('value' => AIFLG_createUniqueId ()));
+	break;
+      case 'newuser':
+	header ('Content-type:application/json;charset=utf-8');
+	echo newUser ($_POST);
+	break;
+
       default:
 	header('Content-type:application/json;charset=utf-8');
 	echo json_encode ($_GET['query']);
       }
   } else if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     switch ($_POST['query']) {
+    case 'uniqueid':
+      error_log ("receive unique id");
+      header('Content-type:application/json;charset=utf-8');
+      echo json_encode (array ('value' => AIFLG_createUniqueId ()));
+      break;
+
+    case 'newuser':
+      header ('Content-type:application/json;charset=utf-8');
+      echo newUser ($_POST);
+      break;
+      
     case 'updateuser':
       header('Content-type:application/json;charset=utf-8');
       echo updateUser ($_POST);
+      break;
     }
   } else {
     header($_SERVER["SERVER_PROTOCOL"]." 404 Not Found");
