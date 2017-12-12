@@ -155,16 +155,22 @@ function getAllUsersJson ($uid) {
 
 function updateUser ($userData) {
   global $AIFLG_ROLES_TABLE;
-
+  global $AIFLG_BDD;
+  $AIFLG_BDD->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION );
   $currentKey = AIFLG_getKeyForUID ($userData['uid']);
   if ($currentKey != $userData ['_key'])
     AIFLG_updateUserKey ($userData['uid'], $userData ['_key']);
 
-  $query = "update $AIFLG_ROLES_TABLE set _role='${userData['_role']}', description='${userData['description']}' where uid='${userData['uid']}'";
-  error_log ($query);
-  AIFLG_execute ($query);
-  
+  AIFLG_executePrepared ("update $AIFLG_ROLES_TABLE set _role=:role, description=:description where uid=:uid",
+			 array (':role' => $userData['_role'],
+				':description' => $userData['description'],
+				':uid' => $userData['uid']));
+			   
   return json_encode (["status" => "ok"]);
+}
+
+function getStructures () {
+
 }
 
 ?>
