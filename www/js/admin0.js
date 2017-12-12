@@ -6,6 +6,7 @@
 
 SoDAD.Admin = {};
 SoDAD.Admin.loadUsers = function (d) {
+    var containerId = d.users_container_id;
     var whenUpdateRow = function (dataRow) {
 	var options = $.extend ({query: "updateuser"}, dataRow.values);
 	$.post ("index.php",
@@ -21,15 +22,15 @@ SoDAD.Admin.loadUsers = function (d) {
 	       function (data) {
 		   var options = {
 		       whenUpdateRow: whenUpdateRow,
-		       containerId: d.users_container_id,
-		       tableId: d.users_container_id + "-table",
+		       containerId: containerId,
+		       tableId: containerId + "-table",
 		       editForm: {
 			   title: "Administration des utilisateurs",
-			   containerId: d.users_container_id + "-edit-modal"}};
+			   containerId: containerId + "-edit-modal"}};
 		   
 		   var x = new SoDAD_HTMLTable (data, options);
 
-		   $("#" + d.users_container_id)
+		   $("#" + containerId)
 		       .empty ()
 		       .append (x.tableElement)
 		       .append (x.editElement);
@@ -37,6 +38,7 @@ SoDAD.Admin.loadUsers = function (d) {
 };
 
 SoDAD.Admin.loadStructures = function (d) {
+    var containerId = d.structures_container_id;
     var whenUpdateRow = function (dataRow) {
 	var options = $.extend ({query: "updatestructure"}, dataRow.values);
 	$.post ("index.php",
@@ -52,15 +54,15 @@ SoDAD.Admin.loadStructures = function (d) {
 	       function (data) {
 		   var options = {
 		       whenUpdateRow: whenUpdateRow,
-		       containerId: d.users_container_id,
-		       tableId: d.users_container_id + "-table",
+		       containerId: containerId,
+		       tableId: containerId + "-table",
 		       editForm: {
 			   title: "Administration des structures",
-			   containerId: d.users_container_id + "-edit-modal"}};
+			   containerId: containerId + "-edit-modal"}};
 		   
 		   var x = new SoDAD_HTMLTable (data, options);
 
-		   $("#" + d.users_container_id)
+		   $("#" + containerId)
 		       .empty ()
 		       .append (x.tableElement)
 		       .append (x.editElement);
