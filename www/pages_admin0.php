@@ -10,21 +10,12 @@
 <!doctype html>
 <html>
   <head>
-    <?php
-      include 'stdheader.php'
-    ?>
+    <?php include 'stdheader.php' ?>
     <title>AIFLG Page Principale</title>
     <script src="js/sodad.js"></script>
     <script src="js/table.js"></script>
     <script src="js/admin0.js"></script>
-    <script>
-      $(function () {
-        loadPageAdmin0 ({
-          uid: '<?php echo $uid; ?>',
-          users_container_id: "users-table",
-          structures_container_id: "structures-table"
-        })})
-    </script>
+    <script> $(function () {SoDAD.pageAdmin0WhenLoaded ('<?php echo $uid; ?>')}) </script>
   </head>
   <body>
     <nav class="navbar navbar-inverse">
