@@ -41,8 +41,15 @@
       <ul class="nav nav-tabs">
 	<li class="active"><a data-toggle="tab" href="#users-tab">Utilisateurs</a></li>
 	<li><a data-toggle="tab" href="#structures-tab">Structures</a></li>
+	<li><a data-toggle="tab" href="#producteurs-tab">Producteurs</a></li>
+	<li><a data-toggle="tab" href="#parcelles-tab">Parcelles</a></li>
       </ul>
       <div class="tab-content">
+	<?php
+	  //
+	  // Utilisateurs
+	  //
+	  ?>
 	<div id="users-tab" class="tab-pane fade in active">
 	  <div id="users-table" class="well">
 	    USERS
@@ -53,16 +60,51 @@
 	    </button>
 	  </div>
 	</div>
+	<?php
+	  //
+	  // Structures
+	  //
+	  ?>	
 	<div id="structures-tab" class="tab-pane">
 	  <div id="structures-table" class="well">
 	    STRUCTURES
 	  </div>
 	  <div>
-	    <button id="structure-table-addbtn", type="button" class="btn pull-right" data-toggle="modal" data-target="#structures-edit-modal">
+	    <button id="structure-table-addbtn", type="button" class="btn pull-right" data-toggle="modal" data-target="#structures-table-edit-modal">
 	      <span class="glyphicon glyphicon-plus"></span>
 	    </button>
 	  </div>
 	</div>
+	<?php
+	  //
+	  // Producteurs
+	  //
+	  ?>	
+	<div id="producteurs-tab" class="tab-pane">
+	  <div id="producteurs-table" class="well">
+	    PRODUCTEURS
+	  </div>
+	  <div>
+	    <button id="producteurs-table-addbtn", type="button" class="btn pull-right" data-toggle="modal" data-target="#structures-table-edit-modal">
+	      <span class="glyphicon glyphicon-plus"></span>
+	    </button>
+	  </div>
+	</div>
+	<?php
+	  //
+	  // PARCELLES
+	  //
+	  ?>	
+	<div id="parcelles-tab" class="tab-pane">
+	  <div id="parcelles-table" class="well">
+	    PARCELLES
+	  </div>
+	  <div>
+	    <button id="parcelles-table-addbtn", type="button" class="btn pull-right" data-toggle="modal" data-target="#structures-table-edit-modal">
+	      <span class="glyphicon glyphicon-plus"></span>
+	    </button>
+	  </div>
+	</div>	
       </div>
   </body>
 </html>
