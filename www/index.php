@@ -32,7 +32,7 @@ if (is_null ($uid)) {
 	header('Content-type:application/json;charset=utf-8');
 	echo json_encode (array ('value' => AIFLG_createUniqueId ()));
 	break;
-      case 'newuser':
+      case 'newusers':
 	header ('Content-type:application/json;charset=utf-8');
 	echo newUser ($_POST);
 	break;
@@ -42,22 +42,39 @@ if (is_null ($uid)) {
 	echo json_encode ($_GET['query']);
       }
   } else if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    switch ($_POST['query']) {
-    case 'uniqueid':
-      error_log ("receive unique id");
-      header('Content-type:application/json;charset=utf-8');
-      echo json_encode (array ('value' => AIFLG_createUniqueId ()));
-      break;
+    header('Content-type:application/json;charset=utf-8');
+    if (is_null ($_POST['query']))
+      echo json_encode (['error' => "no query"]);
+    else {
+      if (strpos ($_SERVER ['HTTP_ACCEPT'], 'application/json') === FALSE) {
+	echo json_encode (['error' => "must accept application/json MIME type"]);
+      } else
+	switch ($_POST['query']) {
+	case 'allusers':
+	  echo getAllUsersJSON ($uid);
+	  break;
+	  
+	case 'uniqueid':
+	  echo json_encode (array ('value' => AIFLG_createUniqueId ()));
+	  break;
+	  
+	case 'newusers':
+	  echo newUser ($_POST);
+	  break;
+	  
+	case 'updateusers':
+	  echo updateUser ($_POST);
+	  break;
+	  
+	case 'allstructures':
+	  echo getAllStructuresJSON ($uid);
+	  break;
 
-    case 'newuser':
-      header ('Content-type:application/json;charset=utf-8');
-      echo newUser ($_POST);
-      break;
-      
-    case 'updateuser':
-      header('Content-type:application/json;charset=utf-8');
-      echo updateUser ($_POST);
-      break;
+	default:
+	  error_log ("undefined query : ${_POST['query']}");
+	  echo json_encode (['error' => "undefined query"]);
+	  break;
+	}
     }
   } else {
     header($_SERVER["SERVER_PROTOCOL"]." 404 Not Found");
