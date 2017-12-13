@@ -44,6 +44,15 @@ function SoDAD_HTMLTable (data, options) {
     this.tableElement = this.toHTMLTable (data, options);
     this.editElement = this.createFormForFields (data.fields, options);
 
+    var handleUpdate = function (fun, dataRow) {
+	if (fun && $.isFunction (fun))
+	    fun (dataRow,
+		 function (data, dataRow) {
+		     self.data.rows = data.rows;
+		     self.refreshView ();
+		 });
+    };
+    
     this.updateRow = function (dataRow) {
 	if (options.whenUpdateRow)
 	    options.whenUpdateRow (dataRow,
@@ -60,7 +69,11 @@ function SoDAD_HTMLTable (data, options) {
 					self.data.rows = data.rows;
 					self.refreshView ();
 				    });
-    }
+    };
+
+    this.deleteRow = function (dataRow) {
+	handleUpdate (options.whenDeleteRow, dataRow);
+    };
 }
 
 
@@ -147,6 +160,7 @@ $.extend (SoDAD_HTMLTable.prototype, {
 				    if (field.inputId && ! field.noneditable && ! self.options.noneditable) {
 					newDataRow.values [field.name] = $("#" + field.inputId).val ();
 				    }
+				    //alert ("#" + field.inputId + " : " + JSON.stringify (newDataRow.values [field.name]));
 				});
 			self.updateRow (newDataRow);
 			e.preventDefault ();
@@ -166,6 +180,17 @@ $.extend (SoDAD_HTMLTable.prototype, {
 				}})}})(dataRow))
     },
 
+    createRowRemoveBtnElement: function (dataRow) {
+	var self = this;
+	return createGlyph ("remove",
+			    {
+				visible: dataRow.deletable
+			    })
+	    .click (function () {
+		self.deleteRow (dataRow);
+	    });
+    },
+    
     createRowElement: function (dataRow) {
 	var self = this;
 	var row = $("<tr/>",
@@ -175,12 +200,14 @@ $.extend (SoDAD_HTMLTable.prototype, {
 	var c = $ ("<td/>").appendTo (row);
 
 	this.createRowEditBtnElement (dataRow).appendTo (c);
-	    
+	this.createRowRemoveBtnElement (dataRow).appendTo (c);
+	/*
 	createGlyph ("remove",
 		     {
 			 visible: dataRow.deletable
 		     })
 	    .appendTo (c);
+	*/
 	var I = this.data.I;
 	for (i = 0; i < I.length; i ++) {
 	    var field = this.data.fields [I[i]];

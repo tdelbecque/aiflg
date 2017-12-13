@@ -17,7 +17,7 @@ SoDAD.Admin.whenUpdateRowGen = function (queryUpdate, queryRefresh) {
 				{query: queryRefresh},
 				function (data) {
 				    if (SoDAD.isDefined (data.error))
-					alert ("error");
+					alert ("error : " + JSON.stringify (data));
 				    else 
 					callback (data, dataRow);
 				},
@@ -51,6 +51,7 @@ SoDAD.Admin.load = function (what, uid, formTitle) {
     var containerId = what + "-table";
     var whenUpdateRow = SoDAD.Admin.whenUpdateRowGen ("update" + what, "all" + what);
     var whenAddElement = SoDAD.Admin.whenUpdateRowGen ("add" + what, "all" + what);
+
     $.post ("index.php",
 	    {query: "all" + what},
 	    function (data) {
@@ -61,6 +62,7 @@ SoDAD.Admin.load = function (what, uid, formTitle) {
 			newElement: SoDAD.Admin.newElementGen ("new" + what),
 			whenUpdateRow: whenUpdateRow,
 			whenAddElement: whenAddElement,
+			whenDeleteRow: SoDAD.Admin.whenUpdateRowGen ("delete" + what, "all" + what),
 			containerId: containerId,
 			tableId: containerId + "-table",
 			editForm: {

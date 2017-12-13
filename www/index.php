@@ -73,10 +73,13 @@ if (is_null ($uid)) {
 	  break;
 	  
 	case 'addusers':
-	  header ('Content-type:application/json;charset=utf-8');
 	  echo addUser ($_POST);
 	  break;
 
+	case 'deleteusers':
+	  echo deleteUser ($_POST);
+	  break;
+	  
 	case 'allstructures':
 	  echo getAllStructuresJSON ($uid);
 	  break;

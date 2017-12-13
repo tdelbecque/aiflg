@@ -54,7 +54,10 @@ function getAllUsersJson ($uid) {
     $row = array ('id' => $i++, 'values' => $values, 'options' => $options); //, 'editable' => true);
     if ($uid === "0" OR $r ['uid'] !== "0")
       $row ['editable'] = true;
-    
+
+    if ($uid === "0" AND $r ['uid'] !== "0")
+      $row ['deletable'] = true;
+      
     array_push ($rows, $row);
   }
   $rs -> closeCursor ();
@@ -74,10 +77,11 @@ function updateUser ($userData) {
   if ($currentKey != $userData ['_key'])
     AIFLG_updateUserKey ($userData['uid'], $userData ['_key']);
 
-  AIFLG_executePrepared ("update $AIFLG_ROLES_TABLE set _role=:role, description=:description where uid=:uid",
+  AIFLG_executePrepared ("update $AIFLG_ROLES_TABLE set _role=:role, description=:description, sid=:sid  where uid=:uid",
 			 array (':role' => $userData['_role'],
 				':description' => $userData['description'],
-				':uid' => $userData['uid']));
+				':uid' => $userData['uid'],
+				':sid' => $userData['sid']));
 			   
   return json_encode (array ("status" => "ok"));
 }
@@ -91,7 +95,7 @@ function newUser ($data) {
 function addUser ($userData) {
   global $AIFLG_KEYS_TABLE;
   global $AIFLG_ROLES_TABLE;
-  error_log ('adduser');
+
   try {
     AIFLG_getKeyForUID ($userData['uid']);
     return json_encode (['error' => "Cannot create new user for uid = ${userData['uid']}"]);
@@ -109,6 +113,19 @@ function addUser ($userData) {
 				  ':description' => $userData['description']));
     return json_encode (array ("status" => "ok"));  
   }
+}
+
+function deleteUser ($userData) {
+  global $AIFLG_KEYS_TABLE;
+  global $AIFLG_ROLES_TABLE;
+
+  if ($userData['uid'] !== 0) {
+    AIFLG_executePrepared ("delete from $AIFLG_KEYS_TABLE where uid = :uid",
+			   array (':uid' => $userData['uid']));
+    AIFLG_executePrepared ("delete from $AIFLG_ROLES_TABLE where uid = :uid",
+			   array (':uid' => $userData['uid']));    
+  } 
+  return json_encode (array ("status" => "ok"));  
 }
 
 ?>
