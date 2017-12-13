@@ -56,6 +56,7 @@ function getAllUsersJson ($uid) {
   }
   $rs -> closeCursor ();
   $data = array ('fields' => $fields,
+		 'key' => 'uid',
 		 'rows' => $rows);
   return json_encode ($data);
 }

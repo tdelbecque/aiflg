@@ -54,6 +54,7 @@ function getAllStructuresJson ($uid) {
   }
   $rs -> closeCursor ();
   $data = array ('fields' => $fields,
+		 'key' => 'sid',
 		 'rows' => $rows);
   return json_encode ($data);
 }
