@@ -48,12 +48,21 @@ function SoDAD_HTMLTable (data, options) {
 	if (options.whenUpdateRow)
 	    options.whenUpdateRow (dataRow,
 				   function (data, dataRow) {
-				       self.data = data;
+				       self.data.rows = data.rows;
 				       self.refreshView ();
 				   });
-//	this.refreshView ();
+    };
+
+    this.addRow = function (dataRow) {
+	if (options.whenAddElement)
+	    options.whenAddElement (dataRow,
+				    function (data, dataRow) {
+					self.data.rows = data.rows;
+					self.refreshView ();
+				    });
     }
 }
+
 
 $.extend (SoDAD_HTMLTable.prototype, {
     updateRowView: function (dataRow) {
@@ -196,7 +205,8 @@ $.extend (SoDAD_HTMLTable.prototype, {
 	var self = this;
 	var x = this.data;
 	var options = this.options;
-
+	
+/// ADD BUTTON
 	$("#" + options.containerId + "-addbtn").click (
 	    function () {
 		var f = $('#' + options.editForm.containerId);
@@ -215,11 +225,11 @@ $.extend (SoDAD_HTMLTable.prototype, {
 				    dataRow.values [field.name] = $("#" + field.inputId).val ();
 				}
 			    });
-		    
+		    self.addRow (dataRow);
 		    e.preventDefault ();
 		    $("#" + options.editForm.containerId)
 			.modal ('hide');
-		    self.refreshView ();
+//		    self.refreshView ();
 		    return false;
 		});
 		    

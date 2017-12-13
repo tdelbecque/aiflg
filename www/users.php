@@ -1,4 +1,4 @@
-<?php  // Hi emacs ! -*- mode: c; -*- 
+<?php  // Hi emacs ! -*- mode: c++; -*- 
 require_once ('dbaccess.php');
 require_once 'utils.php';
 require_once 'structures.php';
@@ -51,7 +51,10 @@ function getAllUsersJson ($uid) {
     }
     if ($r ['uid'] == $uid)
       $options ['_role']['noneditable'] = TRUE;
-    $row = array ('id' => $i++, 'values' => $values, 'options' => $options, 'editable' => true);
+    $row = array ('id' => $i++, 'values' => $values, 'options' => $options); //, 'editable' => true);
+    if ($uid === "0" OR $r ['uid'] !== "0")
+      $row ['editable'] = true;
+    
     array_push ($rows, $row);
   }
   $rs -> closeCursor ();
@@ -63,8 +66,10 @@ function getAllUsersJson ($uid) {
 
 function updateUser ($userData) {
   global $AIFLG_ROLES_TABLE;
+
   global $AIFLG_BDD;
   $AIFLG_BDD->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION );
+
   $currentKey = AIFLG_getKeyForUID ($userData['uid']);
   if ($currentKey != $userData ['_key'])
     AIFLG_updateUserKey ($userData['uid'], $userData ['_key']);
@@ -81,6 +86,29 @@ function newUser ($data) {
   return json_encode (array ("uid" => AIFLG_createUniqueID (),
 			     "_key" => substr (strrev (AIFLG_createUniqueID ()), 0, 5)
 			     ));
+}
+
+function addUser ($userData) {
+  global $AIFLG_KEYS_TABLE;
+  global $AIFLG_ROLES_TABLE;
+  error_log ('adduser');
+  try {
+    AIFLG_getKeyForUID ($userData['uid']);
+    return json_encode (['error' => "Cannot create new user for uid = ${userData['uid']}"]);
+  }
+  catch (Exception $e) {
+    AIFLG_executePrepared ("insert into $AIFLG_KEYS_TABLE values (:uid, :key, :ekey)",
+			   array (':uid' => $userData['uid'],
+				  ':key' => $userData['_key'],
+				  ':ekey' => AIFLG_encrypt ($userData['_key'])));
+
+    AIFLG_executePrepared ("insert into $AIFLG_ROLES_TABLE values (:uid, :role, :sid, :description)",
+			   array (':uid' => $userData['uid'],
+				  ':role' => $userData['_role'],
+				  ':sid' => $userData['sid'],
+				  ':description' => $userData['description']));
+    return json_encode (array ("status" => "ok"));  
+  }
 }
 
 ?>

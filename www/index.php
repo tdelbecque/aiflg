@@ -32,11 +32,17 @@ if (is_null ($uid)) {
 	header('Content-type:application/json;charset=utf-8');
 	echo json_encode (array ('value' => AIFLG_createUniqueId ()));
 	break;
+	
       case 'newusers':
 	header ('Content-type:application/json;charset=utf-8');
 	echo newUser ($_POST);
 	break;
 
+      case 'addusers':
+	header ('Content-type:application/json;charset=utf-8');
+	echo addUser ($_POST);
+	break;
+	
       default:
 	header('Content-type:application/json;charset=utf-8');
 	echo json_encode ($_GET['query']);
@@ -66,6 +72,11 @@ if (is_null ($uid)) {
 	  echo updateUser ($_POST);
 	  break;
 	  
+	case 'addusers':
+	  header ('Content-type:application/json;charset=utf-8');
+	  echo addUser ($_POST);
+	  break;
+
 	case 'allstructures':
 	  echo getAllStructuresJSON ($uid);
 	  break;
