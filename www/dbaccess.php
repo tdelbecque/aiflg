@@ -7,8 +7,10 @@ $dburl = 'mysql:host=localhost;dbname=aiflg;charset=utf8';
 $AIFLG_BDD = new PDO ($dburl, $dbuser, $dbpwd);
 $AIFLG_KEYS_TABLE = "keys_table";
 $AIFLG_AUTHCOOKIES_TABLE = "cookies_table";
+
 $AIFLG_ROLES_TABLE = "roles_table";
 $AIFLG_STRUCTURES_TABLE = "structures_table";
+$AIFLG_PRODUCERS_TABLE = 'producers_table';
 
 class AIFLG_DBException extends Exception {
   function __construct ($message) {
