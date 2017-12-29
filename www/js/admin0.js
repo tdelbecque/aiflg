@@ -36,6 +36,8 @@ SoDAD.Admin.newElementGen = function (queryNew) {
 		    $.each (fields,
 			    function (_, field) {
 				if (field.inputId) {
+				    var e = $("#" + field.inputId);
+				    e[0].disabled = field.noneditable ? true : false;
 				    if (SoDAD.isDefined (ne [field.name]))
 					$("#" + field.inputId).val (ne [field.name]);
 				    else
