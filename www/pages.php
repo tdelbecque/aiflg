@@ -2,7 +2,8 @@
 
 require_once 'utils.php';
 require_once 'pages_admin0.php';
-
+require_once 'pages_op0.php';
+require_once 'pages_op1.php';
 ?>
 
 <?php // Page d'erreur 
@@ -39,13 +40,24 @@ function pageError ($error) {
       // l'utilisateur est identifié par $uid. Selon son role la page adaptée est proposée
       //
 function pageForUID ($uid) {
-	 global $AIFLG_ROLE_ADMIN0;
-	 
-	 $role = AIFLG_getRoleForUID ($uid);
-	 if ($role == $AIFLG_ROLE_ADMIN0) {
-	    pageForAdmin0 ($uid);
-	 } else {
-	   pageError ("UNKNOWN ROLE for $uid: $role");
-	 }
+      global $AIFLG_ROLE_ADMIN0;
+      global $AIFLG_ROLE_ADMIN1;
+      global $AIFLG_ROLE_OP0;
+      global $AIFLG_ROLE_OP1;
+      
+      switch (AIFLG_getRoleForUID ($uid)) {
+      case $AIFLG_ROLE_ADMIN0:
+      case $AIFLG_ROLE_ADMIN1:
+        pageForAdmin0 ($uid);
+        break;
+      case $AIFLG_ROLE_OP0:
+        pageForOperator0 ($uid);
+        break;
+      case $AIFLG_ROLE_OP1:
+        pageForOperator1 ($uid);
+        break;
+      default:
+        pageError ("UNKNOWN ROLE for $uid: $role");
+      }
 }
 ?>
