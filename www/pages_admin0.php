@@ -61,7 +61,7 @@
 	    STRUCTURES
 	  </div>
 	  <div>
-	    <button id="structure-table-addbtn", type="button" class="btn pull-right" data-toggle="modal" data-target="#structures-table-edit-modal">
+	    <button id="structures-table-addbtn", type="button" class="btn pull-right" data-toggle="modal" data-target="#structures-table-edit-modal">
 	      <span class="glyphicon glyphicon-plus"></span>
 	    </button>
 	  </div>
