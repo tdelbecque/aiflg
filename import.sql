@@ -56,7 +56,7 @@ create table cookies_table (uid text, cookie text, encrypted_cookie text);
 drop table if exists structures_table;
 create table structures_table (sid text, label text, _type text, description text);
 insert into structures_table values ('0', 'AIFLG', '0', 'AIFLG');
- insert into structures_table values ('-1','FRUITIERSDAUPH','1','FRUITIERSDAUPH');    
+  insert into structures_table values ('-1','FRUITIERSDAUPH','1','FRUITIERSDAUPH');    
  insert into structures_table values ('-1','ALPESCO','1','ALPESCO');                  
  insert into structures_table values ('-1','CADRANSOL','1','CADRANSOL');              
  insert into structures_table values ('-1','GRVDL','1','GRVDL');                      
@@ -78,3 +78,7 @@ insert into structures_table values ('0', 'AIFLG', '0', 'AIFLG');
  insert into structures_table values ('-1','FLEURONANJOU','1','FLEURONANJOU');        
  insert into structures_table values ('-1','HAUTESTERRES','1','HAUTESTERRES');        
  insert into structures_table values ('-1','AGRISUD','1','AGRISUD');                  
+
+drop table if exists producers_table;
+create table producers_table as (select A.*, B.sid from producteurs A join structures_table B on A.code_structure = B.label);
+
