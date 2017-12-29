@@ -49,7 +49,7 @@ function getAllStructuresJson ($uid) {
 		  'values' => $values,
 		  'options' => $options,
 		  'editable' => TRUE);
-    if ($r ['_type'] != 0) $row ['deletable'] = TRUE;
+    if ($r ['sid'] != 0) $row ['deletable'] = TRUE;
     array_push ($rows, $row);
   }
   $rs -> closeCursor ();
@@ -57,6 +57,46 @@ function getAllStructuresJson ($uid) {
 		 'key' => 'sid',
 		 'rows' => $rows);
   return json_encode ($data);
+}
+
+function updateStructure ($structureData) {
+  global $AIFLG_STRUCTURES_TABLE;
+  
+  AIFLG_executePrepared ("update $AIFLG_STRUCTURES_TABLE set label=:label, description=:description where sid=:sid",
+			 array (':sid' => $structureData['sid'],
+				':label' => $structureData['label'],
+				':description' => $structureData['description']));
+  return json_encode (array ("status" => "ok"));
+}
+
+function newStructure ($uid) {
+  return json_encode (array ("sid" => AIFLG_createUniqueID ()));
+}
+
+function addStructure ($structureData) {
+  global $AIFLG_STRUCTURES_TABLE;
+
+  $stmt = AIFLG_executePrepared ("select * from $AIFLG_STRUCTURES_TABLE where sid = ':sid'",
+				 array (':sid' => $structureData ['sid']));
+
+  $r = $stmt -> fetch ();
+  $stmt -> closeCursor ();
+  if ($r) return json_encode (array ('error' => "Cannot create new structure for sid = ${structureData['sid']}"));
+  AIFLG_executePrepared ("insert into $AIFLG_STRUCTURES_TABLE values (:sid, :label, :type, :description)",
+			 array (':sid' => $structureData ['sid'],
+				':label' => $structureData ['label'],
+				':type' => $structureData ['_type'],
+				':description' => $structureData ['description']));
+  return json_encode (array ("status" => "ok"));
+}
+
+function deleteStructure ($structureData) {
+  global $AIFLG_STRUCTURES_TABLE;
+
+  AIFLG_executePrepared ("delete from $AIFLG_STRUCTURES_TABLE where sid = :sid",
+			 array (':sid' => $structureData ['sid']));
+
+  return json_encode (array ("status" => "ok"));  
 }
 
 ?>
