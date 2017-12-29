@@ -51,6 +51,7 @@ function AIFLG_executePrepared ($query, $params) {
   global $AIFLG_BDD;
   $stmt = $AIFLG_BDD -> prepare ($query);
   $stmt -> execute ($params);
+  return $stmt;
 }
 
 ?>
