@@ -85,4 +85,11 @@ SoDAD.Admin.load = function (what, uid, formTitle) {
 SoDAD.pageAdmin0WhenLoaded = function (uid) {
     SoDAD.Admin.load ("users", uid, "Administration des utilisateurs");
     SoDAD.Admin.load ("structures", uid, "Administration des structures");
+    SoDAD.Admin.load ("producers", uid, "Administration des producteurs");
+    SoDAD.Admin.load ("parcels", uid, "Administration des parcelles");
+}
+
+SoDAD.pageOp1WhenLoaded = function (uid) {
+    SoDAD.Admin.load ("producers", uid, "Administration des producteurs");
+    SoDAD.Admin.load ("parcels", uid, "Administration des parcelles");
 }
