@@ -11,6 +11,8 @@
     <title>AIFLG Page Opérateur niveau 1</title>
     <script src="js/sodad.js"></script>
     <script src="js/table.js"></script>
+    <script src="js/admin0.js"></script>
+    <script> $(function () {SoDAD.pageOp1WhenLoaded ('<?php echo $uid; ?>')}) </script>
   </head>
   <body>
     <nav class="navbar navbar-inverse">
@@ -23,10 +25,10 @@
 	</ul>
       </div>
     </nav>
-    <div class="container">
+    <div class="container-fluid">
       <ul class="nav nav-tabs">
-	<li class="active"><a data-toggle="tab" href="#producteurs-tab">Producteurs</a></li>
-	<li><a data-toggle="tab" href="#parcelles-tab">Parcelles</a></li>
+	<li class="active"><a data-toggle="tab" href="#producers-tab">Producteurs</a></li>
+	<li><a data-toggle="tab" href="#parcels-tab">Parcelles</a></li>
       </ul>
       <div class="tab-content">
 	<?php
@@ -34,12 +36,12 @@
 	  // Producteurs
 	  //
 	  ?>	
-	<div id="producteurs-tab" class="tab-pane">
-	  <div id="producteurs-table" class="well">
+	<div id="producers-tab" class="tab-pane fade in active">
+	  <div id="producers-table" class="well">
 	    PRODUCTEURS
 	  </div>
 	  <div>
-	    <button id="producteurs-table-addbtn", type="button" class="btn pull-right" data-toggle="modal" data-target="#structures-table-edit-modal">
+	    <button id="producers-table-addbtn", type="button" class="btn pull-right" data-toggle="modal" data-target="#structures-table-edit-modal">
 	      <span class="glyphicon glyphicon-plus"></span>
 	    </button>
 	  </div>
@@ -49,12 +51,12 @@
 	  // PARCELLES
 	  //
 	  ?>	
-	<div id="parcelles-tab" class="tab-pane">
-	  <div id="parcelles-table" class="well">
+	<div id="parcels-tab" class="tab-pane">
+	  <div id="parcels-table" class="well">
 	    PARCELLES
 	  </div>
 	  <div>
-	    <button id="parcelles-table-addbtn", type="button" class="btn pull-right" data-toggle="modal" data-target="#structures-table-edit-modal">
+	    <button id="parcels-table-addbtn", type="button" class="btn pull-right" data-toggle="modal" data-target="#structures-table-edit-modal">
 	      <span class="glyphicon glyphicon-plus"></span>
 	    </button>
 	  </div>
