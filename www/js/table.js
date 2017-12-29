@@ -259,25 +259,7 @@ $.extend (SoDAD_HTMLTable.prototype, {
 //		    self.refreshView ();
 		    return false;
 		});
-		    
-		var ne = options.newElement (x.fields);
-		if (ne) {
-		    $.each (x.fields,
-			    function (_, field) {
-				if (field.inputId) {
-				    if (SoDAD.isDefined (ne [field.name]))
-					$("#" + field.inputId).val (ne [field.name]);
-				    else
-					$("#" + field.inputId).val ("");					
-				}});
-		} else {
-		    $.each (x.fields,
-			    function (_, field) {
-				if (field.inputId) {
-				    $("#" + field.inputId).val ("");
-				}});
-		}
-		
+		options.newElement (x.fields);
 	    });
 	
 	var I = sortIndexes (x.fields, "crank");
