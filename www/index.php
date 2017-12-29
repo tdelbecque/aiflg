@@ -14,7 +14,7 @@ if (is_null ($uid)) {
     header($_SERVER["SERVER_PROTOCOL"]." 404 Not Found");
  } else {
   if ($_SERVER['REQUEST_METHOD'] == 'GET') {
-    if (is_null ($_GET['query']))
+    if (! isset ($_GET['query']))
       header("Location: welcome.php");
     else
       switch ($_GET['query']) {
@@ -49,7 +49,7 @@ if (is_null ($uid)) {
       }
   } else if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     header('Content-type:application/json;charset=utf-8');
-    if (is_null ($_POST['query']))
+    if (! isset ($_POST['query']))
       echo json_encode (['error' => "no query"]);
     else {
       if (strpos ($_SERVER ['HTTP_ACCEPT'], 'application/json') === FALSE) {
@@ -84,6 +84,22 @@ if (is_null ($uid)) {
 	  echo getAllStructuresJSON ($uid);
 	  break;
 
+	case 'newstructures':
+	  echo newStructure ($_POST);
+	  break;
+
+	case 'addstructures':
+	  echo addStructure ($_POST);
+	  break;
+
+	case 'deletestructures':
+	  echo deleteStructure ($_POST);
+	  break;
+
+	case 'updatestructures':
+	  echo updateStructure ($_POST);
+	  break;
+	  
 	default:
 	  error_log ("undefined query : ${_POST['query']}");
 	  echo json_encode (['error' => "undefined query"]);
