@@ -3,6 +3,7 @@
 require_once 'utils.php';
 require_once 'users.php';
 require_once 'structures.php';
+require_once 'producers.php';
 
 $uid = checkCookie ();
 if (is_null ($uid)) { 
@@ -43,6 +44,11 @@ if (is_null ($uid)) {
 	echo addUser ($_POST);
 	break;
 	
+      case 'allproducers':
+	header ('Content-type:application/json;charset=utf-8');
+	echo getAllProducersJson ("");
+	break;
+
       default:
 	header('Content-type:application/json;charset=utf-8');
 	echo json_encode ($_GET['query']);
@@ -57,7 +63,7 @@ if (is_null ($uid)) {
       } else
 	switch ($_POST['query']) {
 	case 'allusers':
-	  echo getAllUsersJSON ($uid);
+	  echo getAllUsersJson ($uid);
 	  break;
 	  
 	case 'uniqueid':
@@ -81,7 +87,7 @@ if (is_null ($uid)) {
 	  break;
 	  
 	case 'allstructures':
-	  echo getAllStructuresJSON ($uid);
+	  echo getAllStructuresJson ($uid);
 	  break;
 
 	case 'newstructures':
@@ -98,6 +104,10 @@ if (is_null ($uid)) {
 
 	case 'updatestructures':
 	  echo updateStructure ($_POST);
+	  break;
+
+	case 'allproducers':
+	  echo getAllProducersJson ($_POST);
 	  break;
 	  
 	default:
