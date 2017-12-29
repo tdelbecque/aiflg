@@ -19,6 +19,20 @@ function AIFLG_getStructures () {
   return $ret;
 }
 
+function AIFLG_getStructureForUID ($uid) {
+  global $AIFLG_ROLES_TABLE;
+  
+  $stmt = AIFLG_executePrepared ("select sid from $AIFLG_ROLES_TABLE where uid=:uid",
+				 array (':uid' => $uid));
+  if ($stmt -> rowCount () != 1) {
+    $stmt -> closeCursor ();
+    throw new AIFLG_DBException ("structure issue for $uid");
+  }
+  $sid = $stmt -> fetch () ['sid'];
+  $stmt -> closeCursor ();
+  return $sid;
+}
+
 function getAllStructuresJson ($uid) {
   global $AIFLG_STRUCTURES_TABLE;
 
