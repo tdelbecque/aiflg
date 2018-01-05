@@ -78,61 +78,75 @@ function SoDAD_HTMLTable (data, options) {
 
 
 $.extend (SoDAD_HTMLTable.prototype, {
-    updateRowView: function (dataRow) {
+    updateRowView: function (dataRow, rowElt) {
 	var fields = this.data.fields;
-	$("#" + this.options.tableId + " tr[data-key=" + dataRow.values[this.data.key] + "] td[data-fname]").each (
-	    function (_, x) {
-		var e = $(x);
-		var fname = e.attr ("data-fname");
-		var field = $.grep (fields,
-				    function (o, _) {
-					return o.name === fname;
-				    })[0];
-		var str;
-		if (field.options) {
-		    var option = $.grep (field.options,
-			    function (o, _) {
-				return o.value === dataRow.values [fname]
-			    })[0];
-		    str = option ? option.label : '?';
-		} else
-		    str = dataRow.values [fname];
-		e.text (str);
-	    }
-	);
+	var fieldsJElts;
+	
+	if (! rowElt)
+	    fieldsJElts = $("#" + this.options.tableId + " tr[data-key=" + dataRow.values[this.data.key] + "] td[data-fname]")
+	else
+	    fieldsJElts = $("td[data-fname]", rowElt);
+
+	for (var i = 0; i < fieldsJElts.length; i ++) {
+	    var x = fieldsJElts [i];
+	    var e = $(x);
+	    var fname = e.attr ("data-fname");
+	    var field;
+	    for (var j = 0; j < fields.length && fields [j].name !== fname; j ++);
+	    field = fields [j];
+/*
+	    var field = $.grep (fields,
+				function (o, _) {
+				    return o.name === fname;
+				})[0];
+*/
+	    var str;
+	    if (field.options) {
+		for (var j = 0; j < field.options.length && field.options [j].value !== dataRow.values [fname]; j ++);
+		/*
+		var option = $.grep (field.options,
+				     function (o, _) {
+					 return o.value === dataRow.values [fname]
+				     })[0];
+		str = option ? option.label : '?';
+		*/
+		str = (j === field.options.length ? '?' : field.options [j].label);
+	    } else
+		str = dataRow.values [fname];
+	    e.text (str);
+	}
     },
 
     refreshView: function () {
 	var self = this;
 	var undef;
-	var forKey = function (data, key) {
-	    var r = $.grep (data.rows,
-			    function (r, _) {
-				return r.values [data.key] === key;
-			    });
-	    return r.length > 0 ? r [0] : undef;
-	};
-    
 	var options = this.options;
 	var data = this.data;
-	$.each ($("#" + options.containerId + " tr[data-key]"),
-		function (_, rowElt) {
-		    var dataRow = forKey (data, rowElt.dataset.key);
-		    if (dataRow) {
-			self.updateRowView (dataRow);
-			dataRow.touched = true;
-		    } else {
-			$(rowElt).remove ();
-		    }
-		});
-	$.each (data.rows,
-		function (_, dataRow) {
-		    if (dataRow.touched) {
-			delete dataRow.touched;
-		    } else {
-			self.createRowElement (dataRow)
-			    .appendTo ($("#" + options.tableId + "-tbody"));
-		    }});
+	var dico = {};
+	for (var i = 0; i < data.rows.length; i ++)
+	    dico [data.rows [i].values [data.key]] = data.rows [i];
+	var containerElt = document.getElementById (options.containerId);
+	var rowElts = containerElt.getElementsByClassName ("aiflg-datarow");
+	for (var i = 0; i < rowElts.length; i ++) {
+	    var rowElt = rowElts [i];
+	    var dataRow = dico [rowElt.dataset.key];
+	    if (dataRow) {
+		self.updateRowView (dataRow, rowElt);
+		dataRow.touched = true;
+	    } else {
+		$(rowElt).remove ();
+	    }
+	}
+
+	for (var i = 0; i < data.rows.length; i ++) {
+	    var dataRow = data.rows [i];
+	    if (dataRow.touched) {
+		delete dataRow.touched;
+	    } else {
+		self.createRowElement (dataRow)
+		    .appendTo ($("#" + options.tableId + "-tbody"));
+	    }
+	}
     },
 
  /*
@@ -149,7 +163,10 @@ $.extend (SoDAD_HTMLTable.prototype, {
 				"data-target": '#' + this.options.editForm.containerId
 			    })
 	    .click ((function (dataRow) {  // to create a closure
+		var key = dataRow.values [self.data.key];
 		return function () {
+		    for (var i = 0; i < self.data.rows.length && self.data.rows[i].values [self.data.key] !== key; i ++);
+		    var dataRow = self.data.rows [i];
 		    var newDataRow = {values: $.extend ({}, dataRow.values)};
 		    var f = $('#' + self.options.editForm.containerId);
 		    var form = $("#" + self.options.editForm.containerId + "-form");
@@ -195,8 +212,9 @@ $.extend (SoDAD_HTMLTable.prototype, {
 	var self = this;
 	var row = $("<tr/>",
 		    {"data-row": dataRow.id,
-		     "data-key": dataRow.values [this.data.key]
-		    });
+		     "data-key": dataRow.values [this.data.key],
+		     "id": dataRow.values [this.data.key]
+		    }).addClass ("aiflg-datarow");
 	var c = $ ("<td/>").appendTo (row);
 
 	this.createRowEditBtnElement (dataRow).appendTo (c);
