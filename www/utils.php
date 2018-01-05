@@ -113,4 +113,72 @@ function checkCookie () {
   return is_null ($_COOKIE[$AIFLG_AUTHCOOKIE_KEY]) ? NULL : AIFLG_getUIDForAuthCookie ($_COOKIE[$AIFLG_AUTHCOOKIE_KEY]);
 }
 
+class AIFLG_Exception extends Exception {};
+
+function AIFLG_getUIDandRole () {
+  global $AIFLG_ROLE_ADMIN0;
+  global $AIFLG_ROLE_ADMIN1;
+  global $AIFLG_ROLE_OP0;
+  global $AIFLG_ROLE_OP1;  
+
+  $uid = checkCookie ();
+  if (is_null ($uid)) throw new AIFLG_Exception ('No cookie, or no user for this cookie');
+
+  $role = AIFLG_getRoleForUID ($uid);
+  switch ($role) {
+  case $AIFLG_ROLE_ADMIN0:
+  case $AIFLG_ROLE_ADMIN1:
+  case $AIFLG_ROLE_OP0:
+  case $AIFLG_ROLE_OP1:
+    return array ('uid' => $uid, 'role' => $role);
+  default:
+    throw new AIFLG_Exception ("No role for user $uid");
+  }
+}
+
+class AIFLG {
+  const ROLES_TABLE = 'roles_table';
+  const PARCELS_TABLE = 'parcels_table';
+  
+  const ROLE_ADMIN0 = 'ADMIN/0';
+  const ROLE_ADMIN1 = 'ADMIN/1';
+  const ROLE_OP0 = 'OP/0';
+  const ROLE_OP1 = 'OP/1';
+}
+
+class AIFLG_User {
+  private const _role = '_role';
+  private const _sid = 'sid';
+  private const _description = 'description';
+  
+  public $uid;
+  public $role;
+  public $sid;
+  public $description;
+  
+  static function get ($uid) {
+    $query = "select * from " . AIFLG::ROLES_TABLE . " where uid = :uid";
+    $stmt = AIFLG_executePrepared ($query, array (':uid' => $uid));
+    if ($stmt -> rowCount () != 1) throw new AIFLG_Exception ("No record for use $uid");
+    $x = $stmt -> fetch ();
+    $stmt -> closeCursor ();
+    $ret = new AIFLG_User ();
+    $ret -> uid = $uid;
+    $ret -> role = $x [self::_role];
+    $ret -> sid = $x [self::_sid];
+    $ret -> description = $x [self::_description];
+    return $ret;
+  }
+
+  static function getCurrent () {
+    $uid = checkCookie ();
+    if (is_null ($uid)) throw new AIFLG_Exception ('No cookie, or no user for this cookie');
+    return self::get ($uid);
+  }
+
+  function isAdmin () {
+    return $this -> role == AIFLG::ROLE_ADMIN0 OR $this -> role == AIFLG::ROLE_ADMIN1;
+  }
+}
+
 ?>
