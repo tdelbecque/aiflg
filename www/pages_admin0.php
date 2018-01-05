@@ -76,7 +76,7 @@
 	    PRODUCTEURS
 	  </div>
 	  <div>
-	    <button id="producers-table-addbtn", type="button" class="btn pull-right" data-toggle="modal" data-target="#structures-table-edit-modal">
+	    <button id="producers-table-addbtn", type="button" class="btn pull-right" data-toggle="modal" data-target="#producers-table-edit-modal">
 	      <span class="glyphicon glyphicon-plus"></span>
 	    </button>
 	  </div>
@@ -91,7 +91,7 @@
 	    PARCELLES
 	  </div>
 	  <div>
-	    <button id="parcels-table-addbtn", type="button" class="btn pull-right" data-toggle="modal" data-target="#structures-table-edit-modal">
+	    <button id="parcels-table-addbtn", type="button" class="btn pull-right" data-toggle="modal" data-target="#parcels-table-edit-modal">
 	      <span class="glyphicon glyphicon-plus"></span>
 	    </button>
 	  </div>
