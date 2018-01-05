@@ -43,6 +43,8 @@ function getAllProducersForAdminJson () {
 			  'type' => 'text', 'noneditable' => TRUE),
 		   array ('name' => 'structure', 'label' => 'Code Structure',
 			  'type' => 'select', 'options' => $structuresOption),
+		   array ('name' => 'code', 'label' => 'Code Producteur',
+			  'type' => 'text'),
 		   array ('name' => 'nom', 'label' => 'Nom',
 			  'type' => 'text'),
 		   array ('name' => 'adr1', 'label' => 'Voie et no',
@@ -76,7 +78,8 @@ function getAllProducersForAdminJson () {
       $values [$n] = $r [$n];
       $options [$n] = array ();
     }
-    $row = array ('id' => $i ++, 'values' => $values, 'options' => $options);
+    $row = array ('id' => $i ++, 'values' => $values,
+		  'options' => $options, 'editable' => true, 'deletable' => true);
     array_push ($rows, $row);
   }
   $rs -> closeCursor ();
@@ -119,6 +122,36 @@ function getAllProducersForOpJson ($uid) {
   catch (Exception $e) {
     return json_encode (['error' => ""]);
   }
+}
+
+function newProducer ($postData) {
+  global $AIFLG_ROLE_ADMIN0;
+  global $AIFLG_ROLE_ADMIN1;
+  global $AIFLG_ROLE_OP0;
+  global $AIFLG_ROLE_OP1;  
+  $uid = checkCookie ();
+  if (is_null ($uid)) {
+    return json_encode (['error' => "bad authentication cookie"]);
+  }
+
+  switch (AIFLG_getRoleForUID ($uid)) {
+  case $AIFLG_ROLE_ADMIN0:
+  case $AIFLG_ROLE_ADMIN1:
+    return newProducerForAdmin ();
+  case $AIFLG_ROLE_OP0:
+  case $AIFLG_ROLE_OP1:
+    return newProducerForOp ($uid);
+  default:
+    return json_encode (['error' => "undefined role"]);
+  }
+}
+
+function newProducerForAdmin () {
+  return json_encode (array ("pid" => AIFLG_createUniqueID ()));
+}
+
+function newProducerForOp ($uid) {
+  return json_encode (array ("pid" => AIFLG_createUniqueID ()));
 }
 
 ?>
