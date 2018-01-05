@@ -82,3 +82,8 @@ insert into structures_table values ('0', 'AIFLG', '0', 'AIFLG');
 drop table if exists producers_table;
 create table producers_table as (select A.*, B.sid from producteurs A join structures_table B on A.code_structure = B.label);
 
+drop table if exists parcels_table;
+create table parcels_table as select A.*, B.pid, B.sid, '             ' parcid from parcelles A JOIN producers_table B on A.code_producteur = B.code;
+alter table parcels_table drop column no_exploitant;
+alter table parcels_table drop column fiche_bloquee;
+alter table parcels_table drop column dummy;
