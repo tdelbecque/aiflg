@@ -4,8 +4,17 @@ require_once 'utils.php';
 require_once 'users.php';
 require_once 'structures.php';
 require_once 'producers.php';
+require_once 'parcels.php';
 
-$uid = checkCookie ();
+//$uid = checkCookie ();
+try {
+  $user = AIFLG_User::getCurrent ();
+  $uid = $user -> uid;
+}
+catch (AIFLG_Exception $e) {
+  $uid = null;
+}
+
 if (is_null ($uid)) { 
   if (strpos ($_SERVER ['HTTP_ACCEPT'], 'html') != FALSE) {
     header("Location: loginform.php");
@@ -27,6 +36,16 @@ if (is_null ($uid)) {
       case 'allstructures':
 	header('Content-type:application/json;charset=utf-8');
 	echo getAllStructuresJSON ($uid);
+	break;
+
+      case 'allparcels':
+	header('Content-type:application/json;charset=utf-8');
+	echo getAllParcelsJSON ($uid);
+	break;
+
+      case 'updateparcels':
+	header('Content-type:application/json;charset=utf-8');
+	echo updateParcel ($uid);
 	break;
 	
       case 'uniqueid':
@@ -108,6 +127,20 @@ if (is_null ($uid)) {
 
 	case 'allproducers':
 	  echo getAllProducersJson ($_POST);
+	  break;
+
+	case 'newproducers':
+	  echo newProducer ($_POST);
+	  break;
+
+	case 'allparcels':
+	  echo getAllParcelsJson ($user, $_POST);
+	  break;
+
+	case 'updateparcels':
+	  $foo = updateParcel ($user, $_POST);
+	  error_log ("foo = $foo");
+	  echo $foo;
 	  break;
 	  
 	default:
