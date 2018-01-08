@@ -126,13 +126,21 @@ if (is_null ($uid)) {
 	  break;
 
 	case 'allproducers':
-	  echo getAllProducersJson ($_POST);
+	  echo getAllProducersJson ($user, $_POST);
 	  break;
 
 	case 'newproducers':
-	  echo newProducer ($_POST);
+	  echo newProducer ($user, $_POST);
 	  break;
 
+	case 'addproducers':
+	  echo addProducer ($user, $_POST);
+	  break;
+
+	case 'updateproducers':
+	  echo updateProducer ($user, $_POST);
+	  break;
+	  
 	case 'allparcels':
 	  echo getAllParcelsJson ($user, $_POST);
 	  break;
