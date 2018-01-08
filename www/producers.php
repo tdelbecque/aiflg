@@ -3,28 +3,12 @@ require_once 'dbaccess.php';
 require_once 'utils.php';
 require_once 'structures.php';
 
-function getAllProducersJson ($postdata) {
-  global $AIFLG_ROLE_ADMIN0;
-  global $AIFLG_ROLE_ADMIN1;
-  global $AIFLG_ROLE_OP0;
-  global $AIFLG_ROLE_OP1;  
-
-  $uid = checkCookie ();
-  if (is_null ($uid)) {
-    return json_encode (['error' => "bad authentication cookie"]);
-  }
-
-  switch (AIFLG_getRoleForUID ($uid)) {
-  case $AIFLG_ROLE_ADMIN0:
-  case $AIFLG_ROLE_ADMIN1:
-    return getAllProducersForAdminJson ();
-  case $AIFLG_ROLE_OP0:
-  case $AIFLG_ROLE_OP1:
-    return getAllProducersForOpJson ($uid);
-  default:
-    return json_encode (['error' => "undefined role"]);
-  }
-}
+function getAllProducersJson (AIFLG_User $user, $postdata) {
+  return $user -> isAdmin () ?  
+    getAllProducersForAdminJson () :
+    getAllProducersForOpJson ($user);
+  
+ }
 
 function getAllProducersForAdminJson () {
   global $AIFLG_STRUCTURES_TABLE;
@@ -89,69 +73,116 @@ function getAllProducersForAdminJson () {
 			     'rows' => $rows));
 }
 
-function getAllProducersForOpJson ($uid) {
-  try {
-    $sid = AIFLG_getStructureForUID ($uid);
-    $fields = array (array ('name' => 'pid', 'label' => 'Id Producteur',
-			    'type' => 'text', 'noneditable' => TRUE),
-		     array ('name' => 'nom', 'label' => 'Nom',
-			    'type' => 'text'),
-		     array ('name' => 'adr1', 'label' => 'Voie et no',
-			    'type' => 'text'),
-		     array ('name' => 'cp', 'label' => 'Code postal',
-			    'type' => 'text'),
-		     array ('name' => 'ville', 'label' => 'Ville',
-			    'type' => 'text'),
-		     array ('name' => 'telephone', 'label' => 'Téléphone',
-			    'type' => 'text'),
-		     array ('name' => 'fax', 'label' => 'Fax',
-			    'type' => 'text'),
-		     array ('name' => 'mobile', 'label' => 'Mobile',
-			    'type' => 'text'),
-		     array ('name' => 'email', 'label' => 'E-mail',
-			    'type' => 'text')
-		     );
-    $i = 1;
-    foreach ($fields as &$f)
-      $f ['crank'] = $f ['frank'] = $i++;
-
+function getAllProducersForOpJson (AIFLG_User $user) {
+  $fields = array (array ('name' => 'pid', 'label' => 'Id Producteur',
+			  'type' => 'text', 'noneditable' => TRUE),
+		   array ('name' => 'code', 'label' => 'Code Producteur',
+			  'type' => 'text'),
+		   array ('name' => 'nom', 'label' => 'Nom',
+			  'type' => 'text'),
+		   array ('name' => 'adr1', 'label' => 'Voie et no',
+			  'type' => 'text'),
+		   array ('name' => 'cp', 'label' => 'Code postal',
+			  'type' => 'text'),
+		   array ('name' => 'ville', 'label' => 'Ville',
+			  'type' => 'text'),
+		   array ('name' => 'telephone', 'label' => 'Téléphone',
+			  'type' => 'text'),
+		   array ('name' => 'fax', 'label' => 'Fax',
+			  'type' => 'text'),
+		   array ('name' => 'mobile', 'label' => 'Mobile',
+			  'type' => 'text'),
+		   array ('name' => 'email', 'label' => 'E-mail',
+			  'type' => 'text')
+		   );
+  $i = 1;
+  foreach ($fields as &$f)
+    $f ['crank'] = $f ['frank'] = $i++;
+  
+  $query = 'select * from ' . AIFLG::PRODUCERS_TABLE . ' where sid = :sid order by nom';
+  $stmt = AIFLG_executePrepared ($query, array (':sid' => $user -> sid));
+  $rows = array ();
+  $i = 1;
+  while ($r = $stmt -> fetch ()) {
+    $values = array ();
+    $options = array ();
+    foreach ($fields as $g) {
+      $n = $g ['name'];
+      $values [$n] = $r [$n];
+      $options [$n] = array ();
+    }
+    $row = array ('id' => $i ++, 'values' => $values,
+		  'options' => $options, 'editable' => true, 'deletable' => true);
+    array_push ($rows, $row);    
+  }
+  $stmt -> closeCursor ();
+  
   return json_encode (array ('fields' => $fields,
-			       'key' => 'pid',
-			       'rows' => array ()));
-  }
-  catch (Exception $e) {
-    return json_encode (['error' => ""]);
-  }
+			     'key' => 'pid',
+			     'rows' => $rows));
 }
 
-function newProducer ($postData) {
-  global $AIFLG_ROLE_ADMIN0;
-  global $AIFLG_ROLE_ADMIN1;
-  global $AIFLG_ROLE_OP0;
-  global $AIFLG_ROLE_OP1;  
-  $uid = checkCookie ();
-  if (is_null ($uid)) {
-    return json_encode (['error' => "bad authentication cookie"]);
-  }
-
-  switch (AIFLG_getRoleForUID ($uid)) {
-  case $AIFLG_ROLE_ADMIN0:
-  case $AIFLG_ROLE_ADMIN1:
-    return newProducerForAdmin ();
-  case $AIFLG_ROLE_OP0:
-  case $AIFLG_ROLE_OP1:
-    return newProducerForOp ($uid);
-  default:
-    return json_encode (['error' => "undefined role"]);
-  }
+function newProducer (AIFLG_User $user, $postData) {
+  return $user -> isAdmin () ?
+    newProducerForAdmin () :
+    newProducerForOp ($user);
 }
 
 function newProducerForAdmin () {
   return json_encode (array ("pid" => AIFLG_createUniqueID ()));
 }
 
-function newProducerForOp ($uid) {
+function newProducerForOp (AIFLG_User $user) {
   return json_encode (array ("pid" => AIFLG_createUniqueID ()));
+}
+
+function addProducer (AIFLG_User $user, $queryData) {
+  $query = "insert into " . AIFLG::PRODUCERS_TABLE .
+    ' (code, nom, adr1, cp, ville, telephone, fax, mobile, email, pid, sid) values ' .
+    ' (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ';
+
+  AIFLG_executePrepared ($query,
+			 array ($queryData ['code'],
+				$queryData ['nom'],
+				$queryData ['adr1'],
+				$queryData ['cp'],
+				$queryData ['ville'],
+				$queryData ['telephone'],
+				$queryData ['fax'],
+				$queryData ['mobile'],
+				$queryData ['email'],
+				$queryData ['pid'],
+				$user -> isAdmin () ? $queryData ['structure'] : $user -> sid));
+  return json_encode (array ("status" => "ok"));
+}
+
+
+function updateProducer (AIFLG_User $user, $queryData) {
+  // If the user is not an administrator, get the sid for the pis, and check if the user has rights on this sid:
+  if (! $user -> isAdmin ()) {
+    $producer = AIFLG_Producer::get ($queryData ['pid']);
+    $queryData ['structure'] = $producer -> sid;
+  }
+  if ($user -> isAdmin () or ($user -> sid === $queryData ['structure'])) {
+    $query = 'update ' . AIFLG::PRODUCERS_TABLE . ' set ' .
+      'code = ?, nom = ?, adr1 = ?, cp = ?, ville = ?, telephone = ?, fax = ?, mobile = ?, email = ?, sid = ? ' .
+      'where pid = ?';
+    AIFLG_executePrepared ($query,
+			   array ($queryData ['code'],
+				  $queryData ['nom'],
+				  $queryData ['adr1'],
+				  $queryData ['cp'],
+				  $queryData ['ville'],
+				  $queryData ['telephone'],
+				  $queryData ['fax'],
+				  $queryData ['mobile'],
+				  $queryData ['email'],
+				  $queryData ['structure'],
+				  $queryData ['pid']));
+  } else {
+    return json_encode (array ("status" => "error", "error" => "this user cannot update this producer"));
+  }
+  return json_encode (array ("status" => "ok"));
 }
 
 ?>
