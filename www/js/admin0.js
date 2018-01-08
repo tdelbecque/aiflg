@@ -12,17 +12,20 @@ SoDAD.Admin.whenUpdateRowGen = function (queryUpdate, queryRefresh) {
 	$.post ("index.php",
 		options,
 		function (updateRetData) {
-		    if (SoDAD.isDefined (callback) && $.isFunction (callback)) {
-			$.post ("index.php",
-				{query: queryRefresh},
-				function (data) {
-				    if (SoDAD.isDefined (data.error))
-					alert ("error : " + JSON.stringify (data));
-				    else 
-					callback (data, dataRow);
-				},
-				'json')
-		    }
+		    if (SoDAD.isDefined (updateRetData.error))
+			alert (JSON.stringify (updateRetData));
+		    else
+			if (SoDAD.isDefined (callback) && $.isFunction (callback)) {
+			    $.post ("index.php",
+				    {query: queryRefresh},
+				    function (data) {
+					if (SoDAD.isDefined (data.error))
+					    alert ("error : " + JSON.stringify (data));
+					else 
+					    callback (data, dataRow);
+				    },
+				    'json')
+			}
 		},
 		'json');
     }
@@ -85,6 +88,12 @@ SoDAD.Admin.load = function (what, uid, formTitle) {
 SoDAD.pageAdmin0WhenLoaded = function (uid) {
     SoDAD.Admin.load ("users", uid, "Administration des utilisateurs");
     SoDAD.Admin.load ("structures", uid, "Administration des structures");
+    SoDAD.Admin.load ("producers", uid, "Administration des producteurs");
+    SoDAD.Admin.load ("parcels", uid, "Administration des parcelles");
+}
+
+SoDAD.pageOp0WhenLoaded = function (uid) {
+    SoDAD.Admin.load ("users", uid, "Administration des utilisateurs");
     SoDAD.Admin.load ("producers", uid, "Administration des producteurs");
     SoDAD.Admin.load ("parcels", uid, "Administration des parcelles");
 }
