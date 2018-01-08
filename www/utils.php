@@ -139,7 +139,9 @@ function AIFLG_getUIDandRole () {
 class AIFLG {
   const ROLES_TABLE = 'roles_table';
   const PARCELS_TABLE = 'parcels_table';
-  
+  const STRUCTURES_TABLE = 'structures_table';
+  const PRODUCERS_TABLE = 'producers_table';
+
   const ROLE_ADMIN0 = 'ADMIN/0';
   const ROLE_ADMIN1 = 'ADMIN/1';
   const ROLE_OP0 = 'OP/0';
@@ -147,9 +149,9 @@ class AIFLG {
 }
 
 class AIFLG_User {
-  private const _role = '_role';
-  private const _sid = 'sid';
-  private const _description = 'description';
+  const _role = '_role';
+  const _sid = 'sid';
+  const _description = 'description';
   
   public $uid;
   public $role;
@@ -179,6 +181,26 @@ class AIFLG_User {
   function isAdmin () {
     return $this -> role == AIFLG::ROLE_ADMIN0 OR $this -> role == AIFLG::ROLE_ADMIN1;
   }
+}
+
+class AIFLG_Producer {
+  const _sid = 'sid';
+    
+  public $pid;
+  public $sid;
+
+  static function get ($pid) {
+    $query = "select * from " . AIFLG::PRODUCERS_TABLE . " where pid = :pid";
+    $stmt = AIFLG_executePrepared ($query, array (':pid' => $pid));
+    if ($stmt -> rowCount () != 1) throw new AIFLG_Exception ("no single record for pid = $pid");
+    $x = $stmt -> fetch ();
+    $stmt -> closeCursor ();
+    $ret = new AIFLG_Producer ();
+    $ret -> pid = $pid;
+    $ret -> sid = $x [self::_sid];
+    return $ret;
+  }
+
 }
 
 ?>
