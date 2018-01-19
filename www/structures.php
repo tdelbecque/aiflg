@@ -3,9 +3,7 @@ require_once 'dbaccess.php';
 require_once 'utils.php';
 
 function AIFLG_getStructures () {
-  global $AIFLG_STRUCTURES_TABLE;
-
-  $rs = AIFLG_query ("select * from $AIFLG_STRUCTURES_TABLE");
+  $rs = AIFLG_query ("select * from " . AIFLG::STRUCTURES_TABLE);
 
   $ret = array ();
   while ($r = $rs -> fetch ()) {
@@ -20,9 +18,7 @@ function AIFLG_getStructures () {
 }
 
 function AIFLG_getStructureForUID ($uid) {
-  global $AIFLG_ROLES_TABLE;
-  
-  $stmt = AIFLG_executePrepared ("select sid from $AIFLG_ROLES_TABLE where uid=:uid",
+  $stmt = AIFLG_executePrepared ("select sid from " . AIFLG::ROLES_TABLE . " where uid=:uid",
 				 array (':uid' => $uid));
   if ($stmt -> rowCount () != 1) {
     $stmt -> closeCursor ();
@@ -34,9 +30,7 @@ function AIFLG_getStructureForUID ($uid) {
 }
 
 function getAllStructuresJson ($uid) {
-  global $AIFLG_STRUCTURES_TABLE;
-
-  $query = "select * from $AIFLG_STRUCTURES_TABLE";
+  $query = "select * from " . AIFLG::STRUCTURES_TABLE;
   $rs = AIFLG_query ($query);
 
   $fields = array (
@@ -74,9 +68,8 @@ function getAllStructuresJson ($uid) {
 }
 
 function updateStructure ($structureData) {
-  global $AIFLG_STRUCTURES_TABLE;
-  
-  AIFLG_executePrepared ("update $AIFLG_STRUCTURES_TABLE set label=:label, description=:description where sid=:sid",
+  AIFLG_executePrepared ("update " . AIFLG::STRUCTURES_TABLE . 
+                         " set label=:label, description=:description where sid=:sid",
 			 array (':sid' => $structureData['sid'],
 				':label' => $structureData['label'],
 				':description' => $structureData['description']));
@@ -88,15 +81,14 @@ function newStructure ($uid) {
 }
 
 function addStructure ($structureData) {
-  global $AIFLG_STRUCTURES_TABLE;
-
-  $stmt = AIFLG_executePrepared ("select * from $AIFLG_STRUCTURES_TABLE where sid = ':sid'",
+  $stmt = AIFLG_executePrepared ("select * from " . AIFLG::STRUCTURES_TABLE . " where sid = ':sid'",
 				 array (':sid' => $structureData ['sid']));
 
   $r = $stmt -> fetch ();
   $stmt -> closeCursor ();
   if ($r) return json_encode (array ('error' => "Cannot create new structure for sid = ${structureData['sid']}"));
-  AIFLG_executePrepared ("insert into $AIFLG_STRUCTURES_TABLE values (:sid, :label, :type, :description)",
+  AIFLG_executePrepared ("insert into " . AIFLG::STRUCTURES_TABLE . 
+                         " values (:sid, :label, :type, :description)",
 			 array (':sid' => $structureData ['sid'],
 				':label' => $structureData ['label'],
 				':type' => $structureData ['_type'],
@@ -105,9 +97,7 @@ function addStructure ($structureData) {
 }
 
 function deleteStructure ($structureData) {
-  global $AIFLG_STRUCTURES_TABLE;
-
-  AIFLG_executePrepared ("delete from $AIFLG_STRUCTURES_TABLE where sid = :sid",
+  AIFLG_executePrepared ("delete from " . AIFLG::STRUCTURES_TABLE . " where sid = :sid",
 			 array (':sid' => $structureData ['sid']));
 
   return json_encode (array ("status" => "ok"));  

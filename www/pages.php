@@ -40,20 +40,15 @@ function pageError ($error) {
       // l'utilisateur est identifié par $uid. Selon son role la page adaptée est proposée
       //
 function pageForUID ($uid) {
-      global $AIFLG_ROLE_ADMIN0;
-      global $AIFLG_ROLE_ADMIN1;
-      global $AIFLG_ROLE_OP0;
-      global $AIFLG_ROLE_OP1;
-      
       switch (AIFLG_getRoleForUID ($uid)) {
-      case $AIFLG_ROLE_ADMIN0:
-      case $AIFLG_ROLE_ADMIN1:
+      case AIFLG::ROLE_ADMIN0:
+      case AIFLG::ROLE_ADMIN1:
         pageForAdmin0 ($uid);
         break;
-      case $AIFLG_ROLE_OP0:
+      case AIFLG::ROLE_OP0:
         pageForOperator0 ($uid);
         break;
-      case $AIFLG_ROLE_OP1:
+      case AIFLG::ROLE_OP1:
         pageForOperator1 ($uid);
         break;
       default:
