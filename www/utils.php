@@ -1,4 +1,5 @@
-<?php  // Hi emacs ! -*- mode: c; -*- 
+<?php  // Hi emacs ! -*- mode: c; -*-
+require_once ('constants.php');
 require_once ('dbaccess.php');
 
 $AIFLG_AUTHCOOKIE_KEY = "authkey";
@@ -136,17 +137,6 @@ function AIFLG_getUIDandRole () {
   }
 }
 
-class AIFLG {
-  const ROLES_TABLE = 'roles_table';
-  const PARCELS_TABLE = 'parcels_table';
-  const STRUCTURES_TABLE = 'structures_table';
-  const PRODUCERS_TABLE = 'producers_table';
-
-  const ROLE_ADMIN0 = 'ADMIN/0';
-  const ROLE_ADMIN1 = 'ADMIN/1';
-  const ROLE_OP0 = 'OP/0';
-  const ROLE_OP1 = 'OP/1';
-}
 
 class AIFLG_User {
   const _role = '_role';
