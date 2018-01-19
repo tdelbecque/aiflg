@@ -4,7 +4,8 @@
    * class AIFLG contains all constants of the application
    */
 class AIFLG {
-    
+    const AUTHCOOKIE_KEY = "authkey";
+
     /*
      * tables in the data base
      */
