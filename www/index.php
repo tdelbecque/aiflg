@@ -145,6 +145,10 @@ if (is_null ($uid)) {
 	  echo getAllParcelsJson ($user, $_POST);
 	  break;
 
+	case 'newparcels':
+	  echo newParcel ($user, $_POST);
+	  break;
+	  
 	case 'updateparcels':
 	  $foo = updateParcel ($user, $_POST);
 	  error_log ("foo = $foo");
