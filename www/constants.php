@@ -107,6 +107,18 @@ class AIFLG {
                             array ("value" => "T6", "label" => "T6"),
                             array ("value" => "T9", "label" => "T9"));
 
+    public static function encrypt ($s) {
+        return md5($s);
+    }
+
+    public static function createUniqueID () {
+        return uniqid ("");
+    }
+
+    public static function createAuthCookieValue () {
+        return uniqid ("AUTHCOOKIE_");
+    }
+
 }
 
       ?>
