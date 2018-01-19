@@ -2,11 +2,10 @@
 require_once ('utils.php');
 
 function prepare_prodducteurs () {
-  global $AIFLG_STRUCTURES_TABLE;
-  
   $T = array ();
 
-  $stmt = AIFLG_executePrepared ("select label from $AIFLG_STRUCTURES_TABLE where sid='-1'", array());
+  $stmt = AIFLG_executePrepared ("select label from " . AIFLG::STRUCTURES_TABLE . 
+                                 " where sid='-1'", array());
 
   while ($l = $stmt -> fetch ()) {
     array_push ($T, array ($l [0], AIFLG_createUniqueID ()));
@@ -15,7 +14,8 @@ function prepare_prodducteurs () {
   $stmt -> closeCursor ();
 
   foreach ($T as $t) {
-    AIFLG_executePrepared ("update $AIFLG_STRUCTURES_TABLE set sid=:sid where label=:label",
+    AIFLG_executePrepared ("update " . AIFLG::STRUCTURES_TABLE . 
+                           " set sid=:sid where label=:label",
 			   array (':label' => $t[0],
 				  ':sid' => $t[1]));
   }
@@ -37,11 +37,9 @@ foreach ($T as $t) {
 }
 
 function prepare_parcelles () {
-  global $AIFLG_PARCELS_TABLE;
-  
   $T = array ();
 
-  $stmt = AIFLG_executePrepared ("select id_parcelle from $AIFLG_PARCELS_TABLE", array());
+  $stmt = AIFLG_executePrepared ("select id_parcelle from " . AIFLG::PARCELS_TABLE, array());
   while ($l = $stmt -> fetch ()) {
     array_push ($T, array ('id' => $l [0], 'parcid' => AIFLG_createUniqueID ()));
   }
@@ -49,7 +47,8 @@ function prepare_parcelles () {
   $stmt -> closeCursor ();
 
   foreach ($T as $x) {
-    AIFLG_executePrepared ("update $AIFLG_PARCELS_TABLE set parcid=:parcid where id_parcelle=:id", $x);
+    AIFLG_executePrepared ("update " . AIFLG::PARCELS_TABLE . 
+                           " set parcid=:parcid where id_parcelle=:id", $x);
   }
 }
 

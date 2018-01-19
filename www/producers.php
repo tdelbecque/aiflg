@@ -11,9 +11,6 @@ function getAllProducersJson (AIFLG_User $user, $postdata) {
  }
 
 function getAllProducersForAdminJson () {
-  global $AIFLG_STRUCTURES_TABLE;
-  global $AIFLG_PRODUCERS_TABLE;
-
   $structures = AIFLG_getStructures ();
   $structuresOption = array ();
   foreach ($structures as $s) {
@@ -50,7 +47,8 @@ function getAllProducersForAdminJson () {
   foreach ($fields as &$f)
     $f ['crank'] = $f ['frank'] = $i++;
 
-  $query = "select A.*, B.sid as structure from $AIFLG_PRODUCERS_TABLE A join $AIFLG_STRUCTURES_TABLE B on A.sid = B.sid order by B.label, A.nom";
+  $query = "select A.*, B.sid as structure from " . AIFLG::PRODUCERS_TABLE . 
+      " A join " . AIFLG::STRUCTURES_TABLE . " B on A.sid = B.sid order by B.label, A.nom";
   $rs = AIFLG_query ($query);
   $rows = array ();
   $i = 1;
