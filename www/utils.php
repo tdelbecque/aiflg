@@ -2,19 +2,21 @@
 require_once ('constants.php');
 require_once ('dbaccess.php');
 
+/*
 $AIFLG_AUTHCOOKIE_KEY = "authkey";
 $AIFLG_ROLE_ADMIN0 = "ADMIN/0";
 $AIFLG_ROLE_ADMIN1 = "ADMIN/1";
 $AIFLG_ROLE_OP0 = "OP/0";
 $AIFLG_ROLE_OP1 = "OP/1";
-/*
+
 $AIFLG_ROLES = [
 		['value' => $AIFLG_ROLE_ADMIN0, 'label' => 'Administrateur principal', 'level' => 0],
 		['value' => $AIFLG_ROLE_ADMIN1, 'label' => 'Administrateur',           'level' => 1],
 		['value' => $AIFLG_ROLE_OP0,    'label' => 'Opérateur principal',      'level' => 2],
 		['value' => $AIFLG_ROLE_OP1,    'label' => 'Opérateur',                'level' => 3]];
-*/
+
 $AIFLG_ROLES = AIFLG::ROLES;
+
 function AIFLG_encrypt ($s) {
   return md5($s);
 }
@@ -26,9 +28,10 @@ function AIFLG_createUniqueID () {
 function AIFLG_createAuthCookieValue () {
   return uniqid ("AUTHCOOKIE_");
 }
+*/
 
 function AIFLG_getUIDForKey ($key) {
-  $ekey = AIFLG_encrypt ($key); 
+  $ekey = AIFLG::encrypt ($key); 
   $query = "select * from " . AIFLG::KEYS_TABLE . " where encrypted_key = '$ekey'";
   $rs = AIFLG_queryAtMostUnique ($query);
   if ($rs -> rowCount () === 0) 
@@ -52,7 +55,7 @@ function AIFLG_getKeyForUID ($uid) {
 }
 
 function AIFLG_updateUserKey ($uid, $key) {
-  $ekey = AIFLG_encrypt ($key);
+  $ekey = AIFLG::encrypt ($key);
   $query = "update " . AIFLG::KEYS_TABLE . " set _key='$key', encrypted_key='$ekey' where uid='$uid'";
   AIFLG_execute ($query);
 }
@@ -71,7 +74,7 @@ function AIFLG_getRoleForUID ($uid) {
 }
 
 function AIFLG_getUIDForAuthCookie ($cookie) {
-  $ecookie = AIFLG_encrypt ($cookie);
+  $ecookie = AIFLG::encrypt ($cookie);
   $query = "select * from " . AIFLG::AUTHCOOKIES_TABLE . " where encrypted_cookie = '$ecookie'";
   $rs = AIFLG_queryAtMostUnique ($query);
   if ($rs -> rowCount () == 0)
@@ -91,8 +94,8 @@ function AIFLG_dropAuthCookieForUID ($uid) {
 
 function AIFLG_newAuthCookieForUID ($uid) {
   AIFLG_dropAuthCookieForUID ($uid);
-  $cookie = AIFLG_createAuthCookieValue ();
-  $ecookie = AIFLG_encrypt ($cookie);
+  $cookie = AIFLG::createAuthCookieValue ();
+  $ecookie = AIFLG::encrypt ($cookie);
   $query = "insert into " . AIFLG::AUTHCOOKIES_TABLE . " values ('$uid', '$cookie', '$ecookie')";
   AIFLG_execute ($query);
   return  $cookie;

@@ -77,7 +77,7 @@ function updateStructure ($structureData) {
 }
 
 function newStructure ($uid) {
-  return json_encode (array ("sid" => AIFLG_createUniqueID ()));
+  return json_encode (array ("sid" => AIFLG::createUniqueID ()));
 }
 
 function addStructure ($structureData) {

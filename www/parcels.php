@@ -156,7 +156,7 @@ function updateParcel (AIFLG_User $user, $parcelData) {
 }
 
 function newParcel (AIFLG_User $user, $queryData) {
-  return json_encode (array ("parcid" => AIFLG_createUniqueID ()));
+  return json_encode (array ("parcid" => AIFLG::createUniqueID ()));
 }
 
 ?>

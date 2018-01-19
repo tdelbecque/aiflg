@@ -8,7 +8,7 @@ function prepare_prodducteurs () {
                                  " where sid='-1'", array());
 
   while ($l = $stmt -> fetch ()) {
-    array_push ($T, array ($l [0], AIFLG_createUniqueID ()));
+    array_push ($T, array ($l [0], AIFLG::createUniqueID ()));
   }
 
   $stmt -> closeCursor ();
@@ -24,7 +24,7 @@ function prepare_prodducteurs () {
   $stmt = AIFLG_executePrepared ("select code from producteurs where pid is null", array());
 
   while ($l = $stmt -> fetch ()) {
-    array_push ($T, array ($l [0], AIFLG_createUniqueID ()));
+    array_push ($T, array ($l [0], AIFLG::createUniqueID ()));
   }
 
   $stmt -> closeCursor ();
@@ -41,7 +41,7 @@ function prepare_parcelles () {
 
   $stmt = AIFLG_executePrepared ("select id_parcelle from " . AIFLG::PARCELS_TABLE, array());
   while ($l = $stmt -> fetch ()) {
-    array_push ($T, array ('id' => $l [0], 'parcid' => AIFLG_createUniqueID ()));
+    array_push ($T, array ('id' => $l [0], 'parcid' => AIFLG::createUniqueID ()));
   }
 
   $stmt -> closeCursor ();

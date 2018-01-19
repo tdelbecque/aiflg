@@ -127,11 +127,11 @@ function newProducer (AIFLG_User $user, $postData) {
 }
 
 function newProducerForAdmin () {
-  return json_encode (array ("pid" => AIFLG_createUniqueID ()));
+  return json_encode (array ("pid" => AIFLG::createUniqueID ()));
 }
 
 function newProducerForOp (AIFLG_User $user) {
-  return json_encode (array ("pid" => AIFLG_createUniqueID ()));
+  return json_encode (array ("pid" => AIFLG::createUniqueID ()));
 }
 
 function addProducer (AIFLG_User $user, $queryData) {

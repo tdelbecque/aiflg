@@ -82,8 +82,8 @@ function updateUser ($userData) {
 }
 
 function newUser ($data) {
-    return json_encode (array ("uid" => AIFLG_createUniqueID (),
-                               "_key" => substr (strrev (AIFLG_createUniqueID ()), 0, 5)
+    return json_encode (array ("uid" => AIFLG::createUniqueID (),
+                               "_key" => substr (strrev (AIFLG::createUniqueID ()), 0, 5)
                                ));
 }
 
@@ -96,7 +96,7 @@ function addUser ($userData) {
         AIFLG_executePrepared ("insert into " . AIFLG::KEYS_TABLE . " values (:uid, :key, :ekey)",
                                array (':uid' => $userData['uid'],
                                       ':key' => $userData['_key'],
-                                      ':ekey' => AIFLG_encrypt ($userData['_key'])));
+                                      ':ekey' => AIFLG::encrypt ($userData['_key'])));
 
         AIFLG_executePrepared ("insert into " . AIFLG::ROLES_TABLE . " values (:uid, :role, :sid, :description)",
                                array (':uid' => $userData['uid'],
