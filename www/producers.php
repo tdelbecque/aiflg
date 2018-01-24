@@ -25,7 +25,7 @@ function getAllProducersForAdminJson () {
 		   array ('name' => 'structure', 'label' => 'Code Structure',
 			  'type' => 'select', 'options' => $structuresOption),
 		   array ('name' => 'code', 'label' => 'Code Producteur',
-			  'type' => 'text'),
+			  'type' => 'text', 'uniquewith' => 'structure'),
 		   array ('name' => 'nom', 'label' => 'Nom',
 			  'type' => 'text'),
 		   array ('name' => 'adr1', 'label' => 'Voie et no',
