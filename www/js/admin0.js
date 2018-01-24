@@ -56,33 +56,33 @@ SoDAD.Admin.load = function (what, uid, formTitle) {
     var containerId = what + "-table";
     var whenUpdateRow = SoDAD.Admin.whenUpdateRowGen ("update" + what, "all" + what);
     var whenAddElement = SoDAD.Admin.whenUpdateRowGen ("add" + what, "all" + what);
-
+    
     $.post ("index.php",
-	    {query: "all" + what},
-	    function (data) {
-		if (SoDAD.isDefined (data.error)) {
-		    alert (data.error);
-		} else {
-		    var options = {
-			newElement: SoDAD.Admin.newElementGen ("new" + what),
-			whenUpdateRow: whenUpdateRow,
-			whenAddElement: whenAddElement,
-			whenDeleteRow: SoDAD.Admin.whenUpdateRowGen ("delete" + what, "all" + what),
-			containerId: containerId,
-			tableId: containerId + "-table",
-			editForm: {
-			    title: formTitle,
-			    containerId: containerId + "-edit-modal"}};
-		    
-		    var x = new SoDAD_HTMLTable (data, options);
-		    
-		    $("#" + containerId)
-			.empty ()
-			.append (x.tableElement)
-			.append (x.editElement);
-		}
-	    },
-	   'json')
+	        {query: "all" + what},
+	        function (data) {
+		        if (SoDAD.isDefined (data.error)) {
+		            alert (data.error);
+		        } else {
+		            var options = {
+			            newElement: SoDAD.Admin.newElementGen ("new" + what),
+			            whenUpdateRow: whenUpdateRow,
+			            whenAddElement: whenAddElement,
+			            whenDeleteRow: SoDAD.Admin.whenUpdateRowGen ("delete" + what, "all" + what),
+			            containerId: containerId,
+			            tableId: containerId + "-table",
+			            editForm: {
+			                title: formTitle,
+			                containerId: containerId + "-edit-modal"}};
+		            
+		            var x = new SoDAD_HTMLTable (data, options);
+		            
+		            $("#" + containerId)
+			            .empty ()
+			            .append (x.tableElement)
+			            .append (x.editElement);
+		        }
+	        },
+	        'json')
 }
 
 SoDAD.pageAdmin0WhenLoaded = function (uid) {
