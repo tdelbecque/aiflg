@@ -11,7 +11,7 @@ function getAllParcelsJson (AIFLG_User $user, $queryData) {
 const commonParcelsFields = array (array ('name' => 'nom_parcelle', 'label' => 'Nom',
                                           'type' => 'text'),
                                    array ('name' => 'code_parcelle', 'label' => 'Code',
-                                          'type' => 'text'),
+                                          'type' => 'text', 'uniquewith' => 'sid'),
                                    array ('name' => 'code_producteur', 'label' => 'Code Producteur',
                                           'type' => 'text'),
                                    array ('name' => 'itineraire', 'label' => 'Itinéraire',
@@ -135,9 +135,6 @@ function updateParcel (AIFLG_User $user, $parcelData) {
                                'type_chauffage = :type_chauffage,' .
                                'type_plant = :type_plant,' .
                                'nb_plant = :nb_plant,' .
-                               'densite = :densite,' .
-                               'volume_pm = :volume_pm,' .
-                               'precocite_pm = :precocite_pm' .
                                ' where parcid = :parcid',
                                array (':nom_parcelle' => $parcelData ['nom_parcelle'],
                                       ':code_parcelle' => $parcelData ['code_parcelle'],
@@ -152,9 +149,6 @@ function updateParcel (AIFLG_User $user, $parcelData) {
                                       ':type_chauffage' => $parcelData ['type_chauffage'],
                                       ':type_plant' => $parcelData ['type_plant'],
                                       ':nb_plant' => $parcelData ['nb_plant'],
-                                      ':densite' => $parcelData ['densite'],
-                                      ':volume_pm' => $parcelData ['volume_pm'],
-                                      ':precocite_pm' => $parcelData ['precocite_pm'],
                                       ':parcid' => $parcelData ['parcid']));
     }
     return json_encode (array ("status" => "ok"));
