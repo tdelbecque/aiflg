@@ -4,13 +4,8 @@ window.onerror = function (msg, url, lineNo, columnNo, error) {
   return false;
 }
 
-function isUndefined (x) {
-    var undef;
-    return x === undef;
-}
-
 function createGlyph (glyph, options, attr) {
-    if (isUndefined (attr)) attr = {};
+    if (SoDAD.isUndefined (attr)) attr = {};
     var e =  $("<span/>", attr).
 	    addClass ("glyphicon").
 	    addClass ("glyphicon-" + glyph).
@@ -22,11 +17,11 @@ function createGlyph (glyph, options, attr) {
 }
 
 function sortIndexes (fields, criteria, sortFun) {
-    if (isUndefined (sortFun))
+    if (SoDAD.isUndefined (sortFun))
 	    sortFun = function (a, b) {
-	        if (isUndefined (a))
-		        return isUndefined (b) ? 0 : -1;
-	        if (isUndefined (b) || b < a) return 1;
+	        if (SoDAD.isUndefined (a))
+		        return SoDAD.isUndefined (b) ? 0 : -1;
+	        if (SoDAD.isUndefined (b) || b < a) return 1;
 	        return a < b ? -1 : 0;
 	    }
     return $
@@ -40,11 +35,11 @@ function SoDAD_HTMLTable (data, options) {
     this.options = options;
     this.maxRowId = 0;
     for (var i = 0; i < data.rows.length; i ++)
-	    if (! isUndefined (data.rows [i].id))
+	    if (! SoDAD.isUndefined (data.rows [i].id))
 	        this.maxRowId = Math.max (this.maxRowId, data.rows [i].id);
 	
     for (var i = 0; i < data.rows.length; i ++)
-	    if (isUndefined (data.rows [i].id))
+	    if (SoDAD.isUndefined (data.rows [i].id))
 	        data.rows [i].id = ++ this.maxRowId;
     
     this.tableElement = this.toHTMLTable (data, options);
@@ -123,22 +118,38 @@ $.extend (SoDAD_HTMLTable.prototype, {
 	    }
     },
 
+    /*
+      Refreshes the table according to the content of 'this.data'
+
+      gets the HTML container of the table (identified by 'options.containerId'),
+      then the set of HTML rows, that can be recognized because their class is 'aiflg-datarow'.
+
+      For each of these HTML rows, it tries to find the corresponding row in the data.
+      If the row is found updates the HTML cells thanks to 'updateRowView' method and flagges the datarow 
+      as touched, so that it will not be inserted latter in the function. In this case the couter variable 'i'
+      is incremmented.
+      Otherwise the row is removed. The counter variable is not incremented, as a collection 
+      returned by getElementsByClassName is a live collection.
+
+      Finaly the data rows are browsed. When a row is not flagged as 'touched' is is inserted in the
+      table, as a brand new row. The 'touched' flag is removed. 
+    */
     refreshView: function () {
 	    var self = this;
-	    var undef;
 	    var options = this.options;
 	    var data = this.data;
 	    var dico = {};
 	    for (var i = 0; i < data.rows.length; i ++)
 	        dico [data.rows [i].values [data.key]] = data.rows [i];
-	    var containerElt = document.getElementById (options.containerId);
+	    var containerElt = document.getElementById (options.containerId); 
 	    var rowElts = containerElt.getElementsByClassName ("aiflg-datarow");
-	    for (var i = 0; i < rowElts.length; i ++) {
+	    for (var i = 0; i < rowElts.length;) {
 	        var rowElt = rowElts [i];
 	        var dataRow = dico [rowElt.dataset.key];
 	        if (dataRow) {
 		        self.updateRowView (dataRow, rowElt);
 		        dataRow.touched = true;
+                i++
 	        } else {
 		        $(rowElt).remove ();
 	        }
