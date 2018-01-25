@@ -161,7 +161,7 @@ $.extend (SoDAD_HTMLTable.prototype, {
       value: the given value of the field
     */
     checkUniqueWith: function (key, field, value) {
-        var auxValue;
+        var auxFieldValue;
         var auxFieldName = field.uniquewith;
         var fields = this.data.fields;
         // Get the auxiliary value
@@ -176,14 +176,14 @@ $.extend (SoDAD_HTMLTable.prototype, {
         var rows = this.data.rows;
         for (var r = 0; r < rows.length; r ++) {
             var values = rows [r].values;
-            var thisAuxFieldValue = values[auxFieldName].trim ();
-            var thisValue = values[field.name].trim ();
-            var auxKey = values[this.data.key]; 
-            // it is ok to be equal to oneself
-            if ((thisAuxFieldValue === auxFieldValue) && (thisValue === value) && (key !== auxKey))
-                return field.name + " must be unique";
-        }
-    },
+            var thisAuxFieldValue = values[auxFieldName];
+            if (thisAuxFieldValue !== null) {
+                thisAuxFieldValue = thisAuxFieldValue.trim ();
+                var thisValue = values[field.name].trim ();
+                var auxKey = values[this.data.key]; 
+                // it is ok to be equal to oneself
+                if ((thisAuxFieldValue === auxFieldValue) && (thisValue === value) && (key !== auxKey))
+                    return field.name + " must be unique"; } } },
 
     checkFields: function (key) {
         var errMsg;
