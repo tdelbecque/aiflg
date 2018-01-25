@@ -49,7 +49,7 @@ function getAllProducersForAdminJson () {
         $f ['crank'] = $f ['frank'] = $i++;
 
     $query = "select A.*, B.sid as structure from " . AIFLG::PRODUCERS_TABLE . 
-        " A left outer join " . AIFLG::STRUCTURES_TABLE . " B on A.sid = B.sid order by B.label, A.nom";
+        " A left outer join " . AIFLG::STRUCTURES_TABLE . " B on A.sid = B.sid order by B.label, A.nom, A.code";
     $rs = $AIFLG_DATAOBJ -> query ($query);
     $rows = array ();
     $i = 1;
@@ -92,13 +92,14 @@ function getAllProducersForOpJson (AIFLG_User $user) {
                      array ('name' => 'mobile', 'label' => 'Mobile',
                             'type' => 'text'),
                      array ('name' => 'email', 'label' => 'E-mail',
-                            'type' => 'text')
+                            'type' => 'text'),
+                     array ('name' => 'sid', 'invisible' => TRUE)
                      );
     $i = 1;
     foreach ($fields as &$f)
         $f ['crank'] = $f ['frank'] = $i++;
   
-    $query = 'select * from ' . AIFLG::PRODUCERS_TABLE . ' where sid = :sid order by nom';
+    $query = 'select * from ' . AIFLG::PRODUCERS_TABLE . ' where sid = :sid order by nom, code';
     $stmt = AIFLG_executePrepared ($query, array (':sid' => $user -> sid));
     $rows = array ();
     $i = 1;
@@ -132,26 +133,25 @@ function newProducerForAdmin () {
 }
 
 function newProducerForOp (AIFLG_User $user) {
-    return json_encode (array ("pid" => AIFLG::createUniqueID ()));
+    return json_encode (array ("pid" => AIFLG::createUniqueID (),
+                               "sid" => $user -> sid));
 }
 
 function addProducer (AIFLG_User $user, $queryData) {
-    $query = "insert into " . AIFLG::PRODUCERS_TABLE .
-        ' (code, nom, adr1, cp, ville, telephone, fax, mobile, email, pid, sid) values ' .
-        ' (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ';
-
-    AIFLG_executePrepared ($query,
-                           array ($queryData ['code'],
-                                  $queryData ['nom'],
-                                  $queryData ['adr1'],
-                                  $queryData ['cp'],
-                                  $queryData ['ville'],
-                                  $queryData ['telephone'],
-                                  $queryData ['fax'],
-                                  $queryData ['mobile'],
-                                  $queryData ['email'],
-                                  $queryData ['pid'],
-                                  $user -> isAdmin () ? $queryData ['structure'] : $user -> sid));
+    global $AIFLG_DATAOBJ;
+    $AIFLG_DATAOBJ -> 
+        insert (AIFLG::PRODUCERS_TABLE,
+                array ('code' => $queryData ['code'],
+                       'nom' => $queryData ['nom'],
+                       'adr1' => $queryData ['adr1'],
+                       'cp' => $queryData ['cp'],
+                       'ville' => $queryData ['ville'],
+                       'telephone' => $queryData ['telephone'],
+                       'fax' => $queryData ['fax'],
+                       'mobile' => $queryData ['mobile'],
+                       'email' => $queryData ['email'],
+                       'pid' => $queryData ['pid'],
+                       'sid' => $user -> isAdmin () ? $queryData ['structure'] : $user -> sid));
     return json_encode (array ("status" => "ok"));
 }
 
@@ -184,14 +184,20 @@ function updateProducer (AIFLG_User $user, $queryData) {
     return json_encode (array ("status" => "ok"));
 }
 
+/*
+  Delete a producer.
+  If the user is an administrator, this is ok to delete.
+  Otherwise, an operator can only delete producers frim his own
+  structure.
+*/
 function deleteProducer (AIFLG_USER $user, $producerData) {
     global $AIFLG_DATAOBJ;
-    if ($user -> isAdmin ()) {
+    if ($user -> isAdmin () or $user -> sid === $producerData ['sid']) 
         $AIFLG_DATAOBJ -> 
             executePrepared ("delete from " . AIFLG::PRODUCERS_TABLE . 
                              " where pid = :pid",
                              array ('pid' => $producerData ['pid']));
-    }
+
     return json_encode (array ("status" => "ok"));
 }
 
