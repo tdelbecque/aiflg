@@ -8,46 +8,48 @@ SoDAD.Admin = {};
 
 SoDAD.Admin.whenUpdateRowGen = function (queryUpdate, queryRefresh) {
     return function (dataRow, callback) {
-	var options = $.extend ({query: queryUpdate}, dataRow.values);
-	$.post ("index.php",
-		options,
-		function (updateRetData) {
-		    if (SoDAD.isDefined (updateRetData.error))
-			alert (JSON.stringify (updateRetData));
-		    else
-			if (SoDAD.isDefined (callback) && $.isFunction (callback)) {
-			    $.post ("index.php",
-				    {query: queryRefresh},
-				    function (data) {
-					if (SoDAD.isDefined (data.error))
-					    alert ("error : " + JSON.stringify (data));
-					else 
-					    callback (data, dataRow);
-				    },
-				    'json')
-			}
-		},
-		'json');
+	    var options = $.extend ({query: queryUpdate}, dataRow.values);
+	    $.post ("index.php",
+		        options,
+		        function (updateRetData) {
+		            if (SoDAD.isDefined (updateRetData.error))
+			            alert (JSON.stringify (updateRetData));
+		            else
+			            if (SoDAD.isDefined (callback) && $.isFunction (callback)) {
+			                $.post ("index.php",
+				                    {query: queryRefresh},
+				                    function (data) {
+					                    if (SoDAD.isDefined (data.error))
+					                        alert ("error : " + JSON.stringify (data));
+					                    else 
+					                        callback (data, dataRow);
+				                    },
+				                    'json')
+			            }
+		        },
+		        'json');
     }
 };
 
 SoDAD.Admin.newElementGen = function (queryNew) {
-    return function (fields) {
-	$.post ("index.php",
-		{query: queryNew},
-		function (ne) {
-		    $.each (fields,
-			    function (_, field) {
-				if (field.inputId) {
-				    var e = $("#" + field.inputId);
-				    e[0].disabled = field.noneditable ? true : false;
-				    if (SoDAD.isDefined (ne [field.name]))
-					$("#" + field.inputId).val (ne [field.name]);
-				    else
-					$("#" + field.inputId).val ("");					
-				}});	
-		},
-		'json');
+    return function (fields, data) {
+	    $.post ("index.php",
+		        {query: queryNew},
+		        function (ne) {
+		            $.each (fields,
+			                function (_, field) {
+				                if (field.inputId) {
+				                    var e = $("#" + field.inputId);
+				                    e[0].disabled = field.noneditable ? true : false;
+				                    if (SoDAD.isDefined (ne [field.name]))
+					                    $("#" + field.inputId).val (ne [field.name]);
+				                    else
+					                    $("#" + field.inputId).val ("");					
+				                }});
+	                if (SoDAD.isDefined (data)) 
+                        data.received = ne
+		        },
+		        'json');
     }
 };
 
