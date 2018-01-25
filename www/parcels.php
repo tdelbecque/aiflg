@@ -81,8 +81,7 @@ function getAllParcelsForOpJson (AIFLG_User $user) {
 */
     $fields = commonParcelsFields;
     array_unshift ($fields,
-                   array ('name' => 'parcid', 'label' => 'Id Parcelle',
-                          'type' => 'text', 'noneditable' => TRUE));
+                   array ('name' => 'parcid', 'invisible' => TRUE));
     $i = 1;
     foreach ($fields as &$f)
         $f ['crank'] = $f ['frank'] = $i++;
