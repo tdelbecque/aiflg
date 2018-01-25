@@ -74,7 +74,7 @@ function getAllProducersForAdminJson () {
 
 function getAllProducersForOpJson (AIFLG_User $user) {
     $fields = array (array ('name' => 'pid', 'label' => 'Id Producteur',
-                            'type' => 'text', 'noneditable' => TRUE),
+                            'type' => 'text', 'noneditable' => TRUE, 'invisible' => TRUE),
                      array ('name' => 'code', 'label' => 'Code Producteur',
                             'type' => 'text'),
                      array ('name' => 'nom', 'label' => 'Nom',
