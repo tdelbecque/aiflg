@@ -87,12 +87,33 @@ function newUser ($data) {
                                ));
 }
 
+/*
+  Add a new user in the data base.
+  First we check if the user already exists in the db. If so, an exception is raised
+  as it is not possible to create a user multiple times.
+
+  Otherwise a new record is created both in KEYS_TABLE and ROLES_TABLE
+
+  return value: a JSON success status.
+*/
+
 function addUser ($userData) {
     try {
         AIFLG_getKeyForUID ($userData['uid']);
         return json_encode (['error' => "Cannot create new user for uid = ${userData['uid']}"]);
     }
     catch (Exception $e) {
+        global $AIFLG_DATAOBJ;
+        $AIFLG_DATAOBJ -> insert (AIFLG::KEYS_TABLE, 
+                                  array ('uid' => $userData['uid'],
+                                         '_key' => $userData['_key'],
+                                         'encrypted_key' => AIFLG::encrypt ($userData['_key'])));
+        $AIFLG_DATAOBJ -> insert (AIFLG::ROLES_TABLE,
+                                  array ('uid' => $userData['uid'],
+                                         '_role' => $userData['_role'],
+                                         'sid' => $userData['sid'],
+                                         'description' => $userData['description']));
+/*
         AIFLG_executePrepared ("insert into " . AIFLG::KEYS_TABLE . " values (:uid, :key, :ekey)",
                                array (':uid' => $userData['uid'],
                                       ':key' => $userData['_key'],
@@ -103,6 +124,7 @@ function addUser ($userData) {
                                       ':role' => $userData['_role'],
                                       ':sid' => $userData['sid'],
                                       ':description' => $userData['description']));
+*/
         return json_encode (array ("status" => "ok"));  
     }
 }
