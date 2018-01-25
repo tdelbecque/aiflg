@@ -45,6 +45,25 @@ class AIFLG_DATA {
         return $stmt;
     }
 
+    public function insert ($table, $values) {
+        $ks = array ();
+        $xs = array ();
+        $valstr = '';
+        foreach ($values as $k => $x) {
+            array_push ($ks, $k);
+            array_push ($xs, $x);
+            $valstr .= '?,';
+        }
+        $fieldStr = join (',', $ks);
+        $query = "insert into $table (" . 
+            join (',', $ks) . 
+            ") values (" .
+            substr ($valstr, 0, -1) .
+            ")";
+        $stmt = $this -> executePrepared ($query, $xs);
+        return $stmt -> rowCount ();
+    }
+
     public function query ($q) {
         $rs = $this -> connection -> query ($q);
         if (! $rs) throw new AIFLG_DBException ($q);
