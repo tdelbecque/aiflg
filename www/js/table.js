@@ -320,15 +320,31 @@ $.extend (SoDAD_HTMLTable.prototype, {
 	    var x = this.data;
 	    var options = this.options;
 	    
-        /// ADD BUTTON
+        /*
+          Adds the 'New' button behavior.
+          When the user clicks on this button, this hendler reset the 'submit' 
+          method of the form (2).
+          Then it calls the 'newElement' method to ask the server for initial data
+          to feed in the new record: typically an id (1).
+          Note that the 'newElement' method takes care of populating the form fields,
+          and provides the initial data, as returned by the server, in 'initData.received'
+         */
 	    $("#" + options.containerId + "-addbtn").click (
 	        function () {
 		        var f = $('#' + options.editForm.containerId);
 		        var form = $("#" + options.editForm.containerId + "-form");
-		        form.off ("submit");
-		        form.submit (function (e) {
+                var initData = {};
+		        form.off ("submit"); // (2)
+                /*
+                  The 'submit' handlerr begin by checking if the filds are ok. (6). 
+                  Then it browses the fields of the form (that have been 
+                  provided by the user), and populate the dataRow entries with these data (3).
+                  Then it fills the remeining entries with the data provided by the server (4).
+                  At the end it just hide the modal element (5).
+                 */
+		        form.submit (function (e) { 
                     // Validation
-                    var errMsg = self.checkFields ('');
+                    var errMsg = self.checkFields (''); // (6)
                     if (SoDAD.isDefined (errMsg)) {
                         alert (errMsg);
                         return false;
@@ -343,17 +359,21 @@ $.extend (SoDAD_HTMLTable.prototype, {
 		            $.each (x.fields,
 			                function (_, field) {
 				                if (field.inputId) {
-				                    dataRow.values [field.name] = $("#" + field.inputId).val ();
+				                    dataRow.values [field.name] = $("#" + field.inputId).val (); // (3)
 				                }
 			                });
+                    if (SoDAD.isDefined (initData.received)) 
+                        for (initField in initData.received) 
+                            dataRow.values [initField] = initData.received [initField]; // (4)
+                    
 		            self.addRow (dataRow);
 		            e.preventDefault ();
 		            $("#" + options.editForm.containerId)
-			            .modal ('hide');
+			            .modal ('hide'); // (5)
                     //		    self.refreshView ();
 		            return false;
 		        });
-		        options.newElement (x.fields);
+		        options.newElement (x.fields, initData); // (1)
 	        });
 	    
 	    var I = sortIndexes (x.fields, "crank");
