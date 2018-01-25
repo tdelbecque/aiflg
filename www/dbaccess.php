@@ -45,6 +45,12 @@ class AIFLG_DATA {
         return $stmt;
     }
 
+    public function query ($q) {
+        $rs = $this -> connection -> query ($q);
+        if (! $rs) throw new AIFLG_DBException ($q);
+        return $rs;
+    }
+
     public function getDistinctValuesAscendent ($table, $field, $condition, $params) {
         if (is_null ($condition)) {
             $query = "select distinct $field from $table order by $field ASC";
