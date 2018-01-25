@@ -141,6 +141,10 @@ if (is_null ($uid)) {
 	  echo updateProducer ($user, $_POST);
 	  break;
 	  
+    case 'deleteproducers':
+        echo deleteProducer ($user, $_POST);
+        break;
+
 	case 'allparcels':
 	  echo getAllParcelsJson ($user, $_POST);
 	  break;
