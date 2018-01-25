@@ -286,6 +286,7 @@ $.extend (SoDAD_HTMLTable.prototype, {
 	    var I = this.data.I;
 	    for (i = 0; i < I.length; i ++) {
 	        var field = this.data.fields [I[i]];
+            if (field.invisible) continue;
 	        var fname = field.name;
 	        var label;
 	        if (field.type.indexOf ('select') === 0) {
@@ -356,7 +357,10 @@ $.extend (SoDAD_HTMLTable.prototype, {
 	    c = $('<th/>').appendTo (row);
 
 	    for (i = 0; i < I.length; i ++) {
-	        c = $("<th/>").appendTo (row).text (x.fields [I [i]].label);
+	        var field = this.data.fields [I[i]];
+            if (field.invisible) continue;
+	        c = $("<th/>").appendTo (row).text (field.label);
+//	        c = $("<th/>").appendTo (row).text (x.fields [I [i]].label);
 	    }
 	    
         /// CREATES BODY AND DATA ROWS
@@ -424,6 +428,7 @@ $.extend (SoDAD_HTMLTable.prototype, {
 	    $.each (sortIndexes (fields, "frank"),
 		        function (i) {
 		            var field = fields [i];
+                    if (field.invisible) return;
 		            var fname = field.name;
 		            var flabel = field.label;
 		            var inputId = modalEltId + "-form-" + fname;
