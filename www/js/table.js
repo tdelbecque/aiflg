@@ -34,6 +34,7 @@ function SoDAD_HTMLTable (data, options) {
     this.data = data;
     this.options = options;
     this.maxRowId = 0;
+    SoDAD.setCommons (data);
     for (var i = 0; i < data.rows.length; i ++)
 	    if (! SoDAD.isUndefined (data.rows [i].id))
 	        this.maxRowId = Math.max (this.maxRowId, data.rows [i].id);
@@ -63,12 +64,18 @@ function SoDAD_HTMLTable (data, options) {
 				                   });
     };
 
+    /*
+      Called when a new row is added. 
+      Update the commons (1), and replace the rows set with the new one (2), and 
+      refresh the view of the table (3)
+    */
     this.addRow = function (dataRow) {
 	    if (options.whenAddElement)
 	        options.whenAddElement (dataRow,
 				                    function (data, dataRow) {
-					                    self.data.rows = data.rows;
-					                    self.refreshView ();
+                                        SoDAD.setCommons (data);    // (1)
+					                    self.data.rows = data.rows; // (2)
+					                    self.refreshView ();        // (3)
 				                    });
     };
 
@@ -77,14 +84,26 @@ function SoDAD_HTMLTable (data, options) {
     };
 }
 
-
+/*
+  This extension display the data in a regular HTML table
+*/
 $.extend (SoDAD_HTMLTable.prototype, {
+    /*
+      Update a row in a the table.
+      'rowElt' is the HTML row element. If it is not providd it is retrieves with a jquery selector
+      that uses the table id and the key of this dataRow. 
+      In both cases the HTML cells to be filled are retrieved in 'fieldJElts' (1)
+      For each cell we find the piece of data in the dataRow (2).
+      If this is a select, we specifically set the option value, may be by looking
+      to the commons (3)
+    */
     updateRowView: function (dataRow, rowElt) {
 	    var fields = this.data.fields;
 	    var fieldsJElts;
 	    
-	    if (! rowElt)
-	        fieldsJElts = $("#" + this.options.tableId + " tr[data-key=" + dataRow.values[this.data.key] + "] td[data-fname]")
+	    if (! rowElt) // (1)
+	        fieldsJElts = $("#" + this.options.tableId + 
+                            " tr[data-key=" + dataRow.values[this.data.key] + "] td[data-fname]")
 	    else
 	        fieldsJElts = $("td[data-fname]", rowElt);
 
@@ -94,24 +113,29 @@ $.extend (SoDAD_HTMLTable.prototype, {
 	        var fname = e.attr ("data-fname");
 	        var field;
 	        for (var j = 0; j < fields.length && fields [j].name !== fname; j ++);
-	        field = fields [j];
-            /*
-	          var field = $.grep (fields,
-			  function (o, _) {
-			  return o.name === fname;
-			  })[0];
-            */
+	        field = fields [j]; // (2)
 	        var str;
-	        if (field.options) {
-		        for (var j = 0; j < field.options.length && field.options [j].value !== dataRow.values [fname]; j ++);
-		        /*
-		          var option = $.grep (field.options,
-				  function (o, _) {
-				  return o.value === dataRow.values [fname]
-				  })[0];
-		          str = option ? option.label : '?';
-		        */
-		        str = (j === field.options.length ? '?' : field.options [j].label);
+	        if (field.options) { // (3)
+                var options;
+                switch ($.type (field.options)) {
+                case 'array':
+                    options = field.options
+                    break;
+                case 'string':
+                    options = SoDAD.commons [field.options];
+                    break;
+                default:
+                    options = [];
+                }
+                if (SoDAD.isUndefined (options)) {
+                    console.log ("option Undefined");
+                    console.log (JSON.strinfify (field.options), null, 2);
+                    console.log (JSON.strinfify (SoDAD.commons), null, 2);
+                }
+		        for (var j = 0; 
+                     j < options.length && options [j].value !== dataRow.values [fname]; 
+                     j ++);
+		        str = (j === options.length ? '?' : options [j].label);
 	        } else
 		        str = dataRow.values [fname];
 	        e.text (str);
@@ -122,17 +146,17 @@ $.extend (SoDAD_HTMLTable.prototype, {
       Refreshes the table according to the content of 'this.data'
 
       gets the HTML container of the table (identified by 'options.containerId'),
-      then the set of HTML rows, that can be recognized because their class is 'aiflg-datarow'.
+      then the set of HTML rows, that can be recognized because their class is 'aiflg-datarow'. (1)
 
-      For each of these HTML rows, it tries to find the corresponding row in the data.
-      If the row is found updates the HTML cells thanks to 'updateRowView' method and flagges the datarow 
+      For each of these HTML rows, it tries to find the corresponding row in the data. (2)
+      If the row is found (3) updates the HTML cells thanks to 'updateRowView' method and flagges the datarow 
       as touched, so that it will not be inserted latter in the function. In this case the couter variable 'i'
       is incremmented.
       Otherwise the row is removed. The counter variable is not incremented, as a collection 
       returned by getElementsByClassName is a live collection.
 
-      Finaly the data rows are browsed. When a row is not flagged as 'touched' is is inserted in the
-      table, as a brand new row. The 'touched' flag is removed. 
+      Finaly the data rows are browsed (4). When a row is not flagged as 'touched' is is inserted in the
+      table, as a brand new row (5). Othewise the 'touched' flag is removed. 
     */
     refreshView: function () {
 	    var self = this;
@@ -142,11 +166,11 @@ $.extend (SoDAD_HTMLTable.prototype, {
 	    for (var i = 0; i < data.rows.length; i ++)
 	        dico [data.rows [i].values [data.key]] = data.rows [i];
 	    var containerElt = document.getElementById (options.containerId); 
-	    var rowElts = containerElt.getElementsByClassName ("aiflg-datarow");
+	    var rowElts = containerElt.getElementsByClassName ("aiflg-datarow"); // (1)
 	    for (var i = 0; i < rowElts.length;) {
 	        var rowElt = rowElts [i];
-	        var dataRow = dico [rowElt.dataset.key];
-	        if (dataRow) {
+	        var dataRow = dico [rowElt.dataset.key]; // (2)
+	        if (dataRow) { // (3)
 		        self.updateRowView (dataRow, rowElt);
 		        dataRow.touched = true;
                 i++
@@ -155,11 +179,11 @@ $.extend (SoDAD_HTMLTable.prototype, {
 	        }
 	    }
 
-	    for (var i = 0; i < data.rows.length; i ++) {
+	    for (var i = 0; i < data.rows.length; i ++) { // (4)
 	        var dataRow = data.rows [i];
 	        if (dataRow.touched) {
 		        delete dataRow.touched;
-	        } else {
+	        } else { // (5)
 		        self.createRowElement (dataRow)
 		            .appendTo ($("#" + options.tableId + "-tbody"));
 	        }
@@ -222,8 +246,7 @@ $.extend (SoDAD_HTMLTable.prototype, {
 				                "data-toggle": "modal",
 				                "data-target": '#' + this.options.editForm.containerId
 			                })
-	        .click ((function (dataRow) {  // to create a closure
-		        var key = dataRow.values [self.data.key];
+	        .click ((function (key) {  // to create a closure
 		        return function () {
 		            for (var i = 0; 
                          i < self.data.rows.length && self.data.rows[i].values [self.data.key] !== key; 
@@ -232,7 +255,11 @@ $.extend (SoDAD_HTMLTable.prototype, {
 		            var newDataRow = {values: $.extend ({}, dataRow.values)};
 		            var f = $('#' + self.options.editForm.containerId);
 		            var form = $("#" + self.options.editForm.containerId + "-form");
+                    SoDAD.resetFormMutableSelectOptions (form);
 		            form.off ("submit");
+                    /*
+                      behavior when the data is submitted
+                    */
 		            form.submit (function (e) {
                         // Validation
                         var errMsg = self.checkFields (key);
@@ -257,12 +284,11 @@ $.extend (SoDAD_HTMLTable.prototype, {
 			                function (_, field) {
 				                if (field.inputId) {
 				                    var value = dataRow.values [field.name];
-				                    var options = dataRow.options [field.name];
 				                    var nonEditable = field.noneditable || dataRow.options [field.name].noneditable;
 				                    var e = $("#" + field.inputId);
 				                    e[0].disabled = nonEditable;
 				                    e.val (value);
-				                }})}})(dataRow))
+				                }})}})(dataRow.values [self.data.key]))
     },
 
     createRowRemoveBtnElement: function (dataRow) {
@@ -276,25 +302,28 @@ $.extend (SoDAD_HTMLTable.prototype, {
 	        });
     },
     
+    /*
+      Creates a brand new row element.
+      The row HTML element is linked to the data by its id that is set to the value 
+      of the key of the dataRow (1). Note that this may be a problem, and a prefix may be needed.
+      A empty cell is provided to welcome buttons that are created just after (2), (3).
+      Then for each visible field an HTML cell is created. The link wirth the specific piece of data is
+      achieved with the 'data-fname' attribute (4).
+      At least we call 'updateRowView' to fill in the data (5).
+    */
     createRowElement: function (dataRow) {
 	    var self = this;
 	    var row = $("<tr/>",
 		            {"data-row": dataRow.id,
 		             "data-key": dataRow.values [this.data.key],
-		             "id": dataRow.values [this.data.key]
+		             "id": dataRow.values [this.data.key] // (1)
 		            }).addClass ("aiflg-datarow");
-	    var c = $ ("<td/>").appendTo (row);
+	    var c = $ ("<td/>").appendTo (row); // (2)
 
 	    this.createRowEditBtnElement (dataRow).appendTo (c);
-	    this.createRowRemoveBtnElement (dataRow).appendTo (c);
-	    /*
-	      createGlyph ("remove",
-		  {
-		  visible: dataRow.deletable
-		  })
-	      .appendTo (c);
-	    */
+	    this.createRowRemoveBtnElement (dataRow).appendTo (c); // (3)
 	    var I = this.data.I;
+/*
 	    for (i = 0; i < I.length; i ++) {
 	        var field = this.data.fields [I[i]];
             if (field.invisible) continue;
@@ -312,6 +341,13 @@ $.extend (SoDAD_HTMLTable.prototype, {
 	        
 	        $("<td/>", {"data-fname": fname}).appendTo (row).text (label);
 	    }
+*/
+	    for (i = 0; i < I.length; i ++) {
+	        var field = this.data.fields [I[i]];
+            if (! field.invisible)
+	            $("<td/>", {"data-fname": field.name}).appendTo (row); // (4)
+	    }
+        this.updateRowView (dataRow, row); // (5)
 	    return row;
     },
     
@@ -334,6 +370,7 @@ $.extend (SoDAD_HTMLTable.prototype, {
 		        var f = $('#' + options.editForm.containerId);
 		        var form = $("#" + options.editForm.containerId + "-form");
                 var initData = {};
+                SoDAD.resetFormMutableSelectOptions (form);
 		        form.off ("submit"); // (2)
                 /*
                   The 'submit' handlerr begin by checking if the filds are ok. (6). 
@@ -402,6 +439,11 @@ $.extend (SoDAD_HTMLTable.prototype, {
 	    return table;
     },
     
+    /*
+      Given the set of fields, creates the form elements. 
+      The interesting part is (1), that calls iteratively 'createInputForField'
+      to create each element.
+    */
     createFormForFields: function (fields, options) {
 	    var formOptions = options.editForm;
 	    var modalEltId = formOptions.containerId;
@@ -456,8 +498,8 @@ $.extend (SoDAD_HTMLTable.prototype, {
 	    var formElt = $("<form/>", {id: modalEltId + "-form", action: '#'})
 	        .appendTo (modalBodyElt);
 
-	    $.each (sortIndexes (fields, "frank"),
-		        function (i) {
+	    $.each (sortIndexes (fields, "frank"), // (1)
+		        function (i) { 
 		            var field = fields [i];
                     if (field.invisible) return;
 		            var fname = field.name;
@@ -484,21 +526,41 @@ $.extend (SoDAD_HTMLTable.prototype, {
     }
 });
 
+/*
+  Creates the input form element specific for this field.
+  Type of element is decided upon the value of 'field.type', that can take the following values:
+  "text", "text multiple", or "select".
+  When the type is "select" the field must come with a, 'options' attribute. 
+  According to the type of the 'options' attribute, the '<option> may be defined by:
+  - either the items of 'options' itself, if this is an array (1)
+  - or the items of a common array which name is the value of 'options', if this is a string (2)
+  In the latter case the class of the '<select>' element is set to "aiflg-form-select-mutable"
+  so that it will be retrieved when the form will be displayed, and its childs refreshed from the common.
+  Also, a data ("source") is set with the name of the common. 
+*/
 function createInputForField (field) {
     var e;
     switch (field.type) {
     case "text":
 	    e = $("<input/>", {type: "text", "class": "form-control"});
 	    break;
-
     case "select":
 	    e = $("<select/>", {"class": "form-control"});
-	    $.each (field.options,
-		        function (_, opt) {
-		            $("<option/>", {value: opt.value})
-			            .text (opt.label)
-			            .appendTo (e)
-		        });
+        switch ($.type (field.options)) {
+        case "array": // (1)
+	        $.each (field.options,
+		            function (_, opt) {
+		                $("<option/>", {value: opt.value})
+			                .text (opt.label)
+			                .appendTo (e)
+		            });
+            e.addClass ("aiflg-form-select-static");
+            break;
+        case "string": // (2)
+            e.addClass ("aiflg-form-select-mutable");
+            e.data ("source", field.options);
+            break;
+        }
 	    break;
 
     case "text multiple":
@@ -517,23 +579,29 @@ function createInputForField (field) {
 	    .attr ("id", field.inputId);
 }
 
-function fakeData () {
-    var data = {
-	    fields: [
-	        {name: "name1", label: "label 1", crank: 3, frank: 1, type: "text"},
-	        {name: "name2", label: "label 2", crank: 2, frank: 2, type: "text"},
-	        {name: "name3", label: "label 3", type: "select",
-	         options: [
-		         {label: "op1", value: "val1"},
-		         {label: "op2", value: "val2"},
-		         {label: "op3", value: "val3"}
-	         ]}
-	    ],
-	    rows: [
-	        {id: 1, options: {name1: {noneditable: true}}, values: {name1: 'value1'}, editable: true, deletable: true},
-	        {id: 2, values: {name2: 'value2'}, editable: false, deletable: true},
-	        {id: 3, values: {name1: 'value1', name2: 'value2', name3: 'val2'}, editable: true, deletable: true}
-	    ]
-    };
-    return data;
+/*
+  Find the mutable <select> elements for the form: 
+  these elements have class "aiflg-form-select-mutable" (1)
+  For each of these elements find the name of the common (2)
+  and if everything is ok clean the content of the <select> element
+  and add a new <option> for each line of the common (3)
+*/
+SoDAD.resetFormMutableSelectOptions  = function (form) {
+    var mutableSelectElements = $(".aiflg-form-select-mutable", form); // (1)
+    $.each (mutableSelectElements, function (_, e) {
+        e = $(e);
+        var source = e.data ("source"); // (2)
+        if (SoDAD.isDefined (source)) {
+            var options = SoDAD.commons [source];
+            if (SoDAD.isDefined (options)) {
+                e.empty ();
+                for (var i = 0; i < options.length; i ++) { // (3)
+                    var opt = options [i];
+                    $("<option/>", {value: opt.value})
+                        .text (opt.label)
+                        .appendTo (e);
+                }
+            }
+        }
+    });
 }

@@ -119,7 +119,8 @@ function getAllProducersForOpJson (AIFLG_User $user) {
   
     return json_encode (array ('fields' => $fields,
                                'key' => 'pid',
-                               'rows' => $rows));
+                               'rows' => $rows, 
+                               'commons' => array ('producer_codes' => array ('value' => 'code', 'label' => 'code'))));
 }
 
 function newProducer (AIFLG_User $user, $postData) {

@@ -1,4 +1,6 @@
-SoDAD = {};
+SoDAD = {
+    commons: {}
+};
 
 SoDAD.isUndefined = function (x) {
     var undef;
@@ -34,4 +36,20 @@ SoDAD.sortIndexes = function (fields, criteria, sortFun) {
 	.sort (function (a, b) {
 	    return sortFun (fields [a][criteria], fields [b][criteria]) });
 };
+ // TODO, change 'key' to 'value'
 
+SoDAD.setCommons = function (data) {
+    if (SoDAD.isDefined (data.commons)) {
+        var commons = data.commons;
+        for (var cname in commons) SoDAD.commons [cname] = [];
+        for (var i = 0; i < data.rows.length; i ++) {
+            var values = data.rows [i].values;
+            for (cname in commons) {
+                var c = commons [cname];
+                var value = values [c.value];
+                var label = values [c.label];
+                SoDAD.commons [cname].push ({value: value, label:label});
+            }
+        }
+    }
+}

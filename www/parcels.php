@@ -13,7 +13,7 @@ const commonParcelsFields = array (array ('name' => 'nom_parcelle', 'label' => '
                                    array ('name' => 'code_parcelle', 'label' => 'Code',
                                           'type' => 'text', 'uniquewith' => 'sid'),
                                    array ('name' => 'code_producteur', 'label' => 'Code Producteur',
-                                          'type' => 'text'),
+                                          'type' => 'select', 'options' => 'producer_codes'),
                                    array ('name' => 'itineraire', 'label' => 'Itinéraire',
                                           'type' => 'text'),
                                    array ('name' => 'surface', 'label' => 'Surface',
@@ -34,9 +34,13 @@ const commonParcelsFields = array (array ('name' => 'nom_parcelle', 'label' => '
                                           "type" => "select", "options" => AIFLG::typePlant),
                                    array ('name' => 'nb_plant', 'label' => 'Nb plants',
                                           'type' => 'text'));
-  
+/*
+  For the administrator, the producer code must be of text type
+*/
+
 function getAllParcelsForAdminJson () {
     $fields = commonParcelsFields;
+    
     array_unshift ($fields,
                    array ('name' => 'parcid', 'label' => 'Id Parcelle',
                           'type' => 'text', 'noneditable' => TRUE),
@@ -45,9 +49,14 @@ function getAllParcelsForAdminJson () {
                    array ('name' => 'pid', 'label' => 'Id Producteur',
                           'type' => 'text', 'noneditable' => TRUE));
     $i = 1;
-    foreach ($fields as &$f)
+    foreach ($fields as &$f) {
         $f ['crank'] = $f ['frank'] = $i++;
-
+        if ($f ['name'] === 'code_producteur') {
+            $f ['type'] = 'text';
+            unset ($f ['options']);
+        }
+    }
+    unset ($f);
     $query = "select * from " . AIFLG::PARCELS_TABLE;
     $rs = AIFLG_query ($query);
     $i = 1;
