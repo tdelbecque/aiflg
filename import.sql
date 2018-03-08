@@ -13,6 +13,7 @@ create table producteurs (
        no_exploitant	text,
        email		text,
        code_structure	text);
+alter table producteurs add pid text;
 
 drop table if exists parcelles;
 create table parcelles (
