@@ -1,7 +1,7 @@
 <?php // -*- mode: c; -*-
 require_once ('utils.php');
 
-function prepare_prodducteurs () {
+function prepare_structures () {
   $T = array ();
 
   $stmt = AIFLG_executePrepared ("select label from " . AIFLG::STRUCTURES_TABLE . 
@@ -19,7 +19,9 @@ function prepare_prodducteurs () {
 			   array (':label' => $t[0],
 				  ':sid' => $t[1]));
   }
+}
 
+function prepare_producteurs () {
   $T = array ();
   $stmt = AIFLG_executePrepared ("select code from producteurs where pid is null", array());
 
